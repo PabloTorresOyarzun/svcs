@@ -1,0 +1,44 @@
+services:
+  # Servicio Worker: Ejecuta al inicio y espera órdenes futuras
+  migration-worker:
+    build: .
+    container_name: migration-worker
+    restart: unless-stopped
+    env_file:
+      - .env
+    volumes:
+      - ./config/migration.load:/migration.template:ro
+    networks:
+      - backend
+    extra_hosts:
+      - "ares.jleon.lan:172.16.0.240"
+    environment:
+      - TDS_MAX_CONN=1024
+      - ADMIN_TOKEN=${ADMIN_TOKEN}
+    # TRUCO: Ejecutamos el script, usamos ';' para que si falla no detenga el contenedor,
+    # y luego ejecutamos tail -f para mantenerlo vivo para Ofelia.
+    command: >
+      sh -c "/app/run_migration.sh; echo '>> Esperando próxima ejecución programada...'; tail -f /dev/null"
+    labels:
+      ofelia.enabled: "true"
+      # CRON: Segundos(0) Minutos(15) Hora(4) Dia(*) Mes(*) Sem(*)
+      # Se ejecutará todos los días a las 04:15:00 AM
+      ofelia.job-exec.run-migration.schedule: "0 15 4 * * *"
+      ofelia.job-exec.run-migration.command: "/app/run_migration.sh"
+      ofelia.job-exec.run-migration.user: "root"
+
+  # Scheduler (Sin cambios, solo orquesta)
+  ofelia:
+    image: mcuadros/ofelia:latest
+    container_name: migration-scheduler
+    depends_on:
+      - migration-worker
+    command: daemon --docker
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+    networks:
+      - backend
+
+networks:
+  backend:
+    external: true

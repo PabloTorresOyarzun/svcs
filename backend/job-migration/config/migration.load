@@ -186,7 +186,7 @@ CAST
     type numeric drop default drop not null,
     type decimal drop default drop not null,
     type money to numeric drop default drop not null,
-    type smallmoney to numeric default drop not null,
+    type smallmoney to numeric drop default drop not null, /* CORREGIDO: faltaba drop antes de default */
     type int drop default drop not null,
     type smallint drop default drop not null,
     type bigint drop default drop not null,
@@ -293,7 +293,7 @@ EXCLUDING TABLE NAMES LIKE 'dtproperties' IN SCHEMA 'dbo'
 CAST
     type tinyint to smallint drop default drop not null,
     type numeric drop default drop not null,
-    type decimal default drop not null,
+    type decimal drop default drop not null, /* CORREGIDO: faltaba drop antes de default */
     type money to numeric drop default drop not null,
     type smallmoney to numeric drop default drop not null,
     type int drop default drop not null,
