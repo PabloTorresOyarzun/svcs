@@ -120,9 +120,9 @@ body {
 }
 
 .c-navbar .navbar-brand img {
-    height: 38px;
+    height: 62.5px;
     width: auto;
-    filter: brightness(0) invert(1);
+    filter: brightness(4) invert(0);
     transition: var(--transition-fast);
 }
 
@@ -255,27 +255,33 @@ body {
 
 
 /* ============================================
-   COMPONENTE: SIDEBAR
+   COMPONENTE: SIDEBAR (MODIFICADO)
    ============================================ */
 .c-sidebar {
-    position: fixed;
-    left: 0;
+    /* Por defecto (Desktop) usamos sticky */
+    position: sticky;
     top: var(--navbar-height);
+    height: calc(100vh - var(--navbar-height));
     width: var(--sidebar-width);
-    bottom: 0;
+    flex-shrink: 0; /* No encoger en flex */
+    
     background: var(--surface-primary);
     border-right: 1px solid var(--border-color);
     z-index: 1020;
     overflow-y: auto;
-    transition: transform var(--transition-base);
+    
+    /* Transición de margen para colapsar */
+    transition: margin-left var(--transition-base), transform var(--transition-base);
 }
 
 .c-sidebar.has-alert {
     top: calc(var(--navbar-height) + var(--alert-height));
+    height: calc(100vh - var(--navbar-height) - var(--alert-height));
 }
 
+/* Colapsado en Desktop: Margen negativo */
 .c-sidebar.toggled {
-    transform: translateX(calc(-1 * var(--sidebar-width)));
+    margin-left: calc(-1 * var(--sidebar-width));
 }
 
 .c-sidebar__search {
@@ -373,12 +379,14 @@ body {
 
 
 /* ============================================
-   COMPONENTE: MAIN CONTENT
+   COMPONENTE: MAIN CONTENT (MODIFICADO)
    ============================================ */
 .c-main {
-    margin-left: var(--sidebar-width);
+    /* Eliminamos margin-left porque usamos flex */
+    margin-left: 0;
     padding-top: var(--navbar-height);
     min-height: 100vh;
+    width: 100%; /* Toma todo el espacio restante */
     transition: margin-left var(--transition-base);
 }
 
@@ -1186,7 +1194,7 @@ body {
 
 
 /* ============================================
-   COMPONENTE: FOOTER
+   COMPONENTE: FOOTER (MODIFICADO)
    ============================================ */
 .c-footer {
     background: var(--surface-primary);
@@ -1196,7 +1204,7 @@ body {
     color: var(--text-muted);
     font-size: 0.95rem;
     position: relative;
-    z-index: 1030;
+    z-index: auto; /* Z-Index normal para que fluya bajo el contenido */
 }
 
 
@@ -1213,11 +1221,17 @@ body {
     display: none;
     align-items: center;
     justify-content: center;
+    
     background: var(--color-primary);
-    border: none;
-    border-radius: 50%;
     color: var(--text-inverse);
-    box-shadow: var(--shadow-lg);
+    
+    /* CAMBIO: Borde blanco sutil para separar del fondo oscuro */
+    border: 2px solid rgba(255, 255, 255, 0.15);
+    
+    /* CAMBIO: Sombra más profunda para dar relieve */
+    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.3);
+    
+    border-radius: 50%;
     transition: var(--transition-base);
     cursor: pointer;
 }
@@ -1225,6 +1239,9 @@ body {
 #btnBackToTop:hover {
     background: var(--color-accent);
     transform: translateY(-3px);
+    /* Al hacer hover, la sombra e intensidad aumentan */
+    box-shadow: 0 8px 20px rgba(45, 156, 219, 0.4);
+    border-color: rgba(255, 255, 255, 0.4);
 }
 
 #btnBackToTop i {
@@ -1540,27 +1557,6 @@ body {
     animation-delay: 600ms;
 }
 
-/* Hero Section */
-.c-hero__content {
-    animation: fadeInUp 600ms ease-out both;
-    animation-delay: 200ms;
-}
-
-.c-hero__title {
-    animation: fadeInUp 500ms ease-out both;
-    animation-delay: 300ms;
-}
-
-.c-hero__subtitle {
-    animation: fadeInUp 500ms ease-out both;
-    animation-delay: 450ms;
-}
-
-.c-hero__actions {
-    animation: fadeInUp 500ms ease-out both;
-    animation-delay: 600ms;
-}
-
 /* Value Props */
 .c-value-props__item {
     animation: fadeIn var(--transition-base) ease-out both;
@@ -1667,19 +1663,26 @@ body {
 
 
 /* ============================================
-   RESPONSIVE
+   RESPONSIVE (MODIFICADO)
    ============================================ */
 @media (max-width: 991.98px) {
+    /* En móviles, volvemos a Fixed para que se comporte como un menú overlay */
     .c-sidebar {
+        position: fixed;
+        left: 0;
+        bottom: 0;
         transform: translateX(calc(-1 * var(--sidebar-width)));
+        box-shadow: var(--shadow-xl);
     }
     
     .c-sidebar.toggled {
         transform: translateX(0);
+        margin-left: 0; /* Reset del margen negativo de desktop */
     }
     
     .c-main {
         margin-left: 0;
+        width: 100%;
     }
     
     .c-hero__title {

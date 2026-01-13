@@ -11,7 +11,6 @@
 
 <body class="d-flex flex-column min-vh-100">
 
-    <!-- NAVBAR -->
     <nav class="navbar navbar-expand-lg fixed-top c-navbar">
         <div class="container-fluid">
             {% if request.url.path != '/' and request.url.path != '/login' %}
@@ -21,13 +20,12 @@
             {% endif %}
             
             <a class="navbar-brand d-flex align-items-center" href="/">
-                <img src="/static/img/logo.png" alt="Agencia de Aduana Juan León" height="40">
+                <img src="/static/img/logo.png" alt="Agencia de Aduana Juan León">
             </a>
 
             <div class="ms-auto d-flex align-items-center gap-4 me-3">
                 {% if request.url.path != '/' and request.url.path != '/login' %}
                 
-                <!-- Notificaciones -->
                 <div class="dropdown">
                     <button class="btn btn-link text-decoration-none p-0 position-relative d-flex align-items-center c-notif-btn" 
                             type="button" id="notifDropdown" data-bs-toggle="dropdown" aria-expanded="false">
@@ -52,7 +50,6 @@
                     </ul>
                 </div>
 
-                <!-- Usuario -->
                 <div class="dropdown">
                     <button class="btn btn-link p-0 border-0 text-decoration-none d-flex align-items-center" 
                             type="button" id="userDropdown" data-bs-toggle="dropdown" aria-expanded="false">
@@ -77,7 +74,6 @@
         </div>
     </nav>
 
-    <!-- ALERTA DE SISTEMA -->
     {% if alert_aduana and request.url.path != '/' and request.url.path != '/login' %}
     <div class="c-alert-bar">
         <i class="bi bi-exclamation-triangle-fill"></i> 
@@ -85,100 +81,98 @@
     </div>
     {% endif %}
 
-    <!-- SIDEBAR -->
-    {% if request.url.path != '/' and request.url.path != '/login' %}
-    <nav id="sidebar" class="c-sidebar {% if alert_aduana %}has-alert{% endif %}">
-        <div class="c-sidebar__search">
-            <div class="input-group input-group-sm">
-                <span class="input-group-text border-end-0"><i class="bi bi-search"></i></span>
-                <input type="text" class="form-control border-start-0" placeholder="Buscar...">
+    <div class="d-flex flex-grow-1 w-100 position-relative">
+
+        {% if request.url.path != '/' and request.url.path != '/login' %}
+        <nav id="sidebar" class="c-sidebar {% if alert_aduana %}has-alert{% endif %}">
+            <div class="c-sidebar__search">
+                <div class="input-group input-group-sm">
+                    <span class="input-group-text border-end-0"><i class="bi bi-search"></i></span>
+                    <input type="text" class="form-control border-start-0" placeholder="Buscar...">
+                </div>
             </div>
+            
+            <ul class="nav flex-column c-sidebar__nav">
+                <li class="nav-item">
+                    <a href="/dashboard" class="c-sidebar__link active" style="--item-index: 1;">
+                        <i class="bi bi-house-door-fill"></i> Inicio
+                    </a>
+                </li>
+                
+                <li class="c-sidebar__header">
+                    <i class="bi bi-box-seam"></i> Operaciones
+                </li>
+                <li class="nav-item">
+                    <a href="#" class="c-sidebar__link" style="--item-index: 2;"><i class="bi bi-folder2-open"></i> Despachos</a>
+                </li>
+                <li class="nav-item">
+                    <a href="#" class="c-sidebar__link" style="--item-index: 3;"><i class="bi bi-truck"></i> Logística / Terreno</a>
+                </li>
+
+                <li class="c-sidebar__header">
+                    <i class="bi bi-cash-coin"></i> Finanzas
+                </li>
+                <li class="nav-item">
+                    <a href="#" class="c-sidebar__link" style="--item-index: 4;"><i class="bi bi-receipt"></i> Facturación</a>
+                </li>
+                <li class="nav-item">
+                    <a href="#" class="c-sidebar__link" style="--item-index: 5;"><i class="bi bi-wallet2"></i> Tesorería</a>
+                </li>
+                <li class="nav-item">
+                    <a href="#" class="c-sidebar__link" style="--item-index: 6;"><i class="bi bi-journal-bookmark"></i> Contabilidad</a>
+                </li>
+
+                <li class="c-sidebar__header">
+                    <i class="bi bi-diagram-3"></i> Gestión
+                </li>
+                <li class="nav-item">
+                    <a href="#" class="c-sidebar__link" style="--item-index: 7;"><i class="bi bi-building"></i> Clientes</a>
+                </li>
+                <li class="nav-item">
+                    <a href="#" class="c-sidebar__link" style="--item-index: 8;"><i class="bi bi-people"></i> Usuarios & Roles</a>
+                </li>
+
+                <li class="c-sidebar__header">
+                    <i class="bi bi-gear"></i> Configuración
+                </li>
+                <li class="nav-item">
+                    <a href="#" class="c-sidebar__link" style="--item-index: 9;"><i class="bi bi-sliders"></i> Sistema</a>
+                </li>
+                <li class="nav-item">
+                    <a href="#" class="c-sidebar__link" style="--item-index: 10;"><i class="bi bi-clock-history"></i> Logs</a>
+                </li>
+            </ul>
+        </nav>
+        {% endif %}
+
+        <div class="c-main flex-grow-1 d-flex flex-column 
+                    {% if request.url.path == '/' or request.url.path == '/login' %}full-width{% endif %}
+                    {% if alert_aduana and request.url.path != '/' and request.url.path != '/login' %}has-alert{% endif %}">
+            
+            <main class="flex-grow-1 {% if request.url.path == '/' or request.url.path == '/login' %}c-main__content no-padding{% else %}c-main__content{% endif %}">
+                
+                {% if breadcrumbs and request.url.path != '/' and request.url.path != '/login' %}
+                <nav aria-label="breadcrumb" class="c-breadcrumb">
+                    <ol class="breadcrumb">
+                        {% for crumb in breadcrumbs %}
+                            {% if loop.last %}
+                                <li class="breadcrumb-item active" aria-current="page">{{ crumb }}</li>
+                            {% else %}
+                                <li class="breadcrumb-item"><a href="#">{{ crumb }}</a></li>
+                            {% endif %}
+                        {% endfor %}
+                    </ol>
+                </nav>
+                {% endif %}
+
+                {% block content %}{% endblock %}
+            </main>
         </div>
         
-        <ul class="nav flex-column c-sidebar__nav">
-            <li class="nav-item">
-                <a href="/dashboard" class="c-sidebar__link active" style="--item-index: 1;">
-                    <i class="bi bi-house-door-fill"></i> Inicio
-                </a>
-            </li>
-            
-            <li class="c-sidebar__header">
-                <i class="bi bi-box-seam"></i> Operaciones
-            </li>
-            <li class="nav-item">
-                <a href="#" class="c-sidebar__link" style="--item-index: 2;"><i class="bi bi-folder2-open"></i> Despachos</a>
-            </li>
-            <li class="nav-item">
-                <a href="#" class="c-sidebar__link" style="--item-index: 3;"><i class="bi bi-truck"></i> Logística / Terreno</a>
-            </li>
-
-            <li class="c-sidebar__header">
-                <i class="bi bi-cash-coin"></i> Finanzas
-            </li>
-            <li class="nav-item">
-                <a href="#" class="c-sidebar__link" style="--item-index: 4;"><i class="bi bi-receipt"></i> Facturación</a>
-            </li>
-            <li class="nav-item">
-                <a href="#" class="c-sidebar__link" style="--item-index: 5;"><i class="bi bi-wallet2"></i> Tesorería</a>
-            </li>
-            <li class="nav-item">
-                <a href="#" class="c-sidebar__link" style="--item-index: 6;"><i class="bi bi-journal-bookmark"></i> Contabilidad</a>
-            </li>
-
-            <li class="c-sidebar__header">
-                <i class="bi bi-diagram-3"></i> Gestión
-            </li>
-            <li class="nav-item">
-                <a href="#" class="c-sidebar__link" style="--item-index: 7;"><i class="bi bi-building"></i> Clientes</a>
-            </li>
-            <li class="nav-item">
-                <a href="#" class="c-sidebar__link" style="--item-index: 8;"><i class="bi bi-people"></i> Usuarios & Roles</a>
-            </li>
-
-            <li class="c-sidebar__header">
-                <i class="bi bi-gear"></i> Configuración
-            </li>
-            <li class="nav-item">
-                <a href="#" class="c-sidebar__link" style="--item-index: 9;"><i class="bi bi-sliders"></i> Sistema</a>
-            </li>
-            <li class="nav-item">
-                <a href="#" class="c-sidebar__link" style="--item-index: 10;"><i class="bi bi-clock-history"></i> Logs</a>
-            </li>
-        </ul>
-    </nav>
-    {% endif %}
-
-    <!-- MAIN CONTENT -->
-    <div class="c-main flex-grow-1 d-flex flex-column 
-                {% if request.url.path == '/' or request.url.path == '/login' %}full-width{% endif %}
-                {% if alert_aduana and request.url.path != '/' and request.url.path != '/login' %}has-alert{% endif %}">
-        
-        <main class="flex-grow-1 {% if request.url.path == '/' or request.url.path == '/login' %}c-main__content no-padding{% else %}c-main__content{% endif %}">
-            
-            {% if breadcrumbs and request.url.path != '/' and request.url.path != '/login' %}
-            <nav aria-label="breadcrumb" class="c-breadcrumb">
-                <ol class="breadcrumb">
-                    {% for crumb in breadcrumbs %}
-                        {% if loop.last %}
-                            <li class="breadcrumb-item active" aria-current="page">{{ crumb }}</li>
-                        {% else %}
-                            <li class="breadcrumb-item"><a href="#">{{ crumb }}</a></li>
-                        {% endif %}
-                    {% endfor %}
-                </ol>
-            </nav>
-            {% endif %}
-
-            {% block content %}{% endblock %}
-        </main>
-    </div>
-
-    <!-- FOOTER -->
-    <footer class="c-footer mt-auto">
+    </div> <footer class="c-footer mt-auto">
         <span>&copy; 2026 Agencia de Aduana Juan León y Cía. Ltda. - Sistema ERP v1.5</span>
     </footer>
 
-    <!-- BACK TO TOP -->
     <button id="btnBackToTop">
         <i class="bi bi-arrow-up"></i>
     </button>
