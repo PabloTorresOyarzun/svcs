@@ -19,7 +19,8 @@ class Settings(BaseSettings):
     DB_PORT: int = 5432
     DB_USER: str = "admin"
     DB_PASSWORD: str = ""
-    DB_NAME: str = "pruebas"
+    DB_NAME: str = "desarrollo"
+    DB_SCHEMA: str = "parser_cache"
 
     # Cache settings
     CACHE_ENABLED: bool = True  # Habilitar/deshabilitar caché globalmente

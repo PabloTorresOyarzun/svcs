@@ -14,8 +14,6 @@ from config import get_settings
 
 logger = logging.getLogger(__name__)
 
-SCHEMA_NAME = "sgd_cache"
-
 
 class DatabaseManager:
     """Gestor de conexiones y operaciones de base de datos."""
@@ -23,6 +21,10 @@ class DatabaseManager:
     def __init__(self):
         self._pool: Optional[asyncpg.Pool] = None
         self._settings = get_settings()
+
+    @property
+    def schema(self) -> str:
+        return self._settings.DB_SCHEMA
 
     async def initialize(self):
         """Inicializa el pool de conexiones y crea el schema si no existe."""
@@ -63,11 +65,12 @@ class DatabaseManager:
 
     async def _create_schema(self):
         """Crea el schema y tablas si no existen."""
+        schema = self.schema
         async with self.connection() as conn:
             await conn.execute(f"""
-                CREATE SCHEMA IF NOT EXISTS {SCHEMA_NAME};
+                CREATE SCHEMA IF NOT EXISTS {schema};
                 
-                CREATE TABLE IF NOT EXISTS {SCHEMA_NAME}.despachos_procesados (
+                CREATE TABLE IF NOT EXISTS {schema}.despachos_procesados (
                     id SERIAL PRIMARY KEY,
                     codigo_despacho VARCHAR(50) NOT NULL,
                     tipo_operacion VARCHAR(20) NOT NULL,
@@ -82,7 +85,7 @@ class DatabaseManager:
                     UNIQUE(codigo_despacho, tipo_operacion)
                 );
                 
-                CREATE TABLE IF NOT EXISTS {SCHEMA_NAME}.documentos_procesados (
+                CREATE TABLE IF NOT EXISTS {schema}.documentos_procesados (
                     id SERIAL PRIMARY KEY,
                     archivo_hash VARCHAR(64) NOT NULL,
                     nombre_archivo VARCHAR(255) NOT NULL,
@@ -95,13 +98,13 @@ class DatabaseManager:
                 );
                 
                 CREATE INDEX IF NOT EXISTS idx_despachos_codigo 
-                    ON {SCHEMA_NAME}.despachos_procesados(codigo_despacho);
+                    ON {schema}.despachos_procesados(codigo_despacho);
                 CREATE INDEX IF NOT EXISTS idx_despachos_hash 
-                    ON {SCHEMA_NAME}.despachos_procesados(documentos_hash);
+                    ON {schema}.despachos_procesados(documentos_hash);
                 CREATE INDEX IF NOT EXISTS idx_documentos_hash 
-                    ON {SCHEMA_NAME}.documentos_procesados(archivo_hash);
+                    ON {schema}.documentos_procesados(archivo_hash);
             """)
-            logger.info(f"Schema {SCHEMA_NAME} verificado/creado")
+            logger.info(f"Schema {schema} verificado/creado")
 
 
 def calcular_hash_documentos(documentos: List[Dict]) -> str:
@@ -132,6 +135,10 @@ class CacheRepository:
     def __init__(self, db_manager: DatabaseManager):
         self._db = db_manager
 
+    @property
+    def schema(self) -> str:
+        return self._db.schema
+
     async def obtener_despacho(
         self, 
         codigo_despacho: str, 
@@ -145,14 +152,14 @@ class CacheRepository:
         async with self._db.connection() as conn:
             if documentos_hash:
                 row = await conn.fetchrow(f"""
-                    SELECT * FROM {SCHEMA_NAME}.despachos_procesados
+                    SELECT * FROM {self.schema}.despachos_procesados
                     WHERE codigo_despacho = $1 
                     AND tipo_operacion = $2
                     AND documentos_hash = $3
                 """, codigo_despacho, tipo_operacion, documentos_hash)
             else:
                 row = await conn.fetchrow(f"""
-                    SELECT * FROM {SCHEMA_NAME}.despachos_procesados
+                    SELECT * FROM {self.schema}.despachos_procesados
                     WHERE codigo_despacho = $1 AND tipo_operacion = $2
                 """, codigo_despacho, tipo_operacion)
             
@@ -186,7 +193,7 @@ class CacheRepository:
         """Guarda o actualiza un despacho procesado."""
         async with self._db.connection() as conn:
             row = await conn.fetchrow(f"""
-                INSERT INTO {SCHEMA_NAME}.despachos_procesados 
+                INSERT INTO {self.schema}.despachos_procesados 
                 (codigo_despacho, tipo_operacion, documentos_hash, cliente, estado, tipo, 
                  total_documentos_segmentados, resultado)
                 VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
@@ -214,7 +221,7 @@ class CacheRepository:
         """Obtiene un documento procesado del caché."""
         async with self._db.connection() as conn:
             row = await conn.fetchrow(f"""
-                SELECT * FROM {SCHEMA_NAME}.documentos_procesados
+                SELECT * FROM {self.schema}.documentos_procesados
                 WHERE archivo_hash = $1 AND tipo_operacion = $2
             """, archivo_hash, tipo_operacion)
             
@@ -242,7 +249,7 @@ class CacheRepository:
         """Guarda o actualiza un documento procesado."""
         async with self._db.connection() as conn:
             row = await conn.fetchrow(f"""
-                INSERT INTO {SCHEMA_NAME}.documentos_procesados 
+                INSERT INTO {self.schema}.documentos_procesados 
                 (archivo_hash, nombre_archivo, tipo_operacion, total_documentos_segmentados, resultado)
                 VALUES ($1, $2, $3, $4, $5)
                 ON CONFLICT (archivo_hash, tipo_operacion) 
@@ -271,7 +278,7 @@ class CacheRepository:
         async with self._db.connection() as conn:
             row = await conn.fetchrow(f"""
                 SELECT documentos_hash, updated_at 
-                FROM {SCHEMA_NAME}.despachos_procesados
+                FROM {self.schema}.despachos_procesados
                 WHERE codigo_despacho = $1 AND tipo_operacion = $2
             """, codigo_despacho, tipo_operacion)
             
@@ -303,12 +310,12 @@ class CacheRepository:
         async with self._db.connection() as conn:
             if tipo_operacion:
                 result = await conn.execute(f"""
-                    DELETE FROM {SCHEMA_NAME}.despachos_procesados
+                    DELETE FROM {self.schema}.despachos_procesados
                     WHERE codigo_despacho = $1 AND tipo_operacion = $2
                 """, codigo_despacho, tipo_operacion)
             else:
                 result = await conn.execute(f"""
-                    DELETE FROM {SCHEMA_NAME}.despachos_procesados
+                    DELETE FROM {self.schema}.despachos_procesados
                     WHERE codigo_despacho = $1
                 """, codigo_despacho)
             

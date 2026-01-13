@@ -17,6 +17,9 @@ class UserSyncService:
 
     def __init__(self):
         self.settings = get_settings()
+        # Leemos el esquema desde la configuración
+        self.schema = self.settings.business_db_schema
+        
         self.engine = create_async_engine(
             self.settings.business_db_url,
             echo=self.settings.app_debug,
@@ -31,11 +34,15 @@ class UserSyncService:
 
     async def ensure_table_exists(self) -> None:
         """
-        Crea la tabla de usuarios si no existe.
+        Crea el esquema y la tabla de usuarios si no existen.
         Esta tabla es una proyeccion de solo lectura para la base de negocio.
         """
-        create_table_sql = text("""
-            CREATE TABLE IF NOT EXISTS users (
+        # 1. Asegurar que el esquema existe
+        create_schema_sql = text(f"CREATE SCHEMA IF NOT EXISTS {self.schema}")
+
+        # 2. Crear la tabla dentro del esquema configurado
+        create_table_sql = text(f"""
+            CREATE TABLE IF NOT EXISTS {self.schema}.users (
                 id UUID PRIMARY KEY,
                 email VARCHAR(255) NOT NULL,
                 full_name VARCHAR(200),
@@ -44,27 +51,30 @@ class UserSyncService:
             )
         """)
 
+        # 3. Indices con el prefijo del esquema
         create_index_email = text(
-            "CREATE INDEX IF NOT EXISTS idx_users_email ON users(email)"
+            f"CREATE INDEX IF NOT EXISTS idx_users_email ON {self.schema}.users(email)"
         )
 
         create_index_deleted = text(
-            "CREATE INDEX IF NOT EXISTS idx_users_deleted_at ON users(deleted_at)"
+            f"CREATE INDEX IF NOT EXISTS idx_users_deleted_at ON {self.schema}.users(deleted_at)"
         )
 
         async with self.engine.begin() as conn:
+            await conn.execute(create_schema_sql)
             await conn.execute(create_table_sql)
             await conn.execute(create_index_email)
             await conn.execute(create_index_deleted)
-            logger.info("users_table_ensured")
+            logger.info("users_table_ensured", schema=self.schema)
 
     async def sync_user(self, user_id: str, email: str, full_name: str) -> None:
         """
         Sincroniza o actualiza un usuario en la base de negocio.
         Usa UPSERT para manejar creacion y actualizacion.
         """
-        upsert_sql = text("""
-            INSERT INTO users (id, email, full_name, synced_at, deleted_at)
+        # Inserción apuntando al esquema configurado
+        upsert_sql = text(f"""
+            INSERT INTO {self.schema}.users (id, email, full_name, synced_at, deleted_at)
             VALUES (:id, :email, :full_name, :synced_at, NULL)
             ON CONFLICT (id) DO UPDATE SET
                 email = EXCLUDED.email,
@@ -84,15 +94,15 @@ class UserSyncService:
                 },
             )
             await session.commit()
-            logger.info("user_synced", user_id=user_id)
+            logger.info("user_synced", user_id=user_id, schema=self.schema)
 
     async def delete_user(self, user_id: str) -> None:
         """
         Marca un usuario como eliminado (soft delete).
         No elimina fisicamente para mantener integridad referencial.
         """
-        soft_delete_sql = text("""
-            UPDATE users 
+        soft_delete_sql = text(f"""
+            UPDATE {self.schema}.users 
             SET deleted_at = :deleted_at
             WHERE id = :id
         """)
@@ -106,7 +116,7 @@ class UserSyncService:
                 },
             )
             await session.commit()
-            logger.info("user_soft_deleted", user_id=user_id)
+            logger.info("user_soft_deleted", user_id=user_id, schema=self.schema)
 
     async def close(self) -> None:
         """Cierra las conexiones a la base de datos."""

@@ -24,6 +24,7 @@ class Settings(BaseSettings):
     business_db_user: str
     business_db_password: str
     business_db_name: str
+    business_db_schema: str
 
     # Seguridad
     cors_origins: str = "http://localhost:3000"
