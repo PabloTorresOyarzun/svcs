@@ -1,115 +1,109 @@
 {% extends "base.html" %}
 
 {% block content %}
-<h2 class="mb-4">Bienvenido, {{ user_name }}</h2>
+<h2 class="mb-4 a-fade-in-up" style="font-weight: 700; color: var(--text-primary);">Bienvenido, {{ user_name }}</h2>
 
+<!-- KPI CARDS -->
 <div class="row g-4 mb-5">
     <div class="col-md-3">
-        <div class="card border-0 shadow-sm h-100 border-start border-4 border-primary">
-            <div class="card-body">
-                <div class="d-flex justify-content-between align-items-center">
-                    <div>
-                        <h6 class="text-muted text-uppercase mb-1">Despachos Activos</h6>
-                        <h2 class="mb-0">124</h2>
-                    </div>
-                    <div class="bg-primary bg-opacity-10 p-3 rounded">
-                        <i class="bi bi-folder-fill text-primary fs-3"></i>
-                    </div>
+        <div class="c-stat c-stat--primary" style="animation-delay: 0ms;">
+            <div class="d-flex justify-content-between align-items-center">
+                <div>
+                    <div class="c-stat__label">Despachos Activos</div>
+                    <div class="c-stat__value">124</div>
+                </div>
+                <div class="c-stat__icon c-stat__icon--primary">
+                    <i class="bi bi-folder-fill"></i>
                 </div>
             </div>
         </div>
     </div>
 
     <div class="col-md-3">
-        <div class="card border-0 shadow-sm h-100 border-start border-4 border-success">
-            <div class="card-body">
-                <div class="d-flex justify-content-between align-items-center">
-                    <div>
-                        <h6 class="text-muted text-uppercase mb-1">Por Imputar (Caja)</h6>
-                        <h3 class="mb-0 text-success">$ 4.5M</h3>
-                    </div>
-                    <div class="bg-success bg-opacity-10 p-3 rounded">
-                        <i class="bi bi-currency-dollar text-success fs-3"></i>
-                    </div>
+        <div class="c-stat c-stat--success" style="animation-delay: 75ms;">
+            <div class="d-flex justify-content-between align-items-center">
+                <div>
+                    <div class="c-stat__label">Por Imputar (Caja)</div>
+                    <div class="c-stat__value c-stat__value--success">$ 4.5M</div>
+                </div>
+                <div class="c-stat__icon c-stat__icon--success">
+                    <i class="bi bi-currency-dollar"></i>
                 </div>
             </div>
         </div>
     </div>
 
     <div class="col-md-3">
-        <div class="card border-0 shadow-sm h-100 border-start border-4 border-warning">
-            <div class="card-body">
-                <div class="d-flex justify-content-between align-items-center">
-                    <div>
-                        <h6 class="text-muted text-uppercase mb-1">Retiros Puerto</h6>
-                        <h2 class="mb-0">8</h2>
-                    </div>
-                    <div class="bg-warning bg-opacity-10 p-3 rounded">
-                        <i class="bi bi-truck text-warning fs-3"></i>
-                    </div>
+        <div class="c-stat c-stat--warning" style="animation-delay: 150ms;">
+            <div class="d-flex justify-content-between align-items-center">
+                <div>
+                    <div class="c-stat__label">Retiros Puerto</div>
+                    <div class="c-stat__value">8</div>
+                </div>
+                <div class="c-stat__icon c-stat__icon--warning">
+                    <i class="bi bi-truck"></i>
                 </div>
             </div>
         </div>
     </div>
 
     <div class="col-md-3">
-        <div class="card border-0 shadow-sm h-100 border-start border-4 border-danger">
-            <div class="card-body">
-                <div class="d-flex justify-content-between align-items-center">
-                    <div>
-                        <h6 class="text-muted text-uppercase mb-1">Facturas Pendientes</h6>
-                        <h2 class="mb-0">12</h2>
-                    </div>
-                    <div class="bg-danger bg-opacity-10 p-3 rounded">
-                        <i class="bi bi-receipt text-danger fs-3"></i>
-                    </div>
+        <div class="c-stat c-stat--danger" style="animation-delay: 225ms;">
+            <div class="d-flex justify-content-between align-items-center">
+                <div>
+                    <div class="c-stat__label">Facturas Pendientes</div>
+                    <div class="c-stat__value">12</div>
+                </div>
+                <div class="c-stat__icon c-stat__icon--danger">
+                    <i class="bi bi-receipt"></i>
                 </div>
             </div>
         </div>
     </div>
 </div>
 
-<div class="card border-0 shadow-sm">
-    <div class="card-header bg-white py-3">
-        <h5 class="mb-0">Ãšltimos Movimientos</h5>
+<!-- TABLA DE MOVIMIENTOS -->
+<div class="c-card">
+    <div class="c-card__header">
+        <h5>Últimos Movimientos</h5>
     </div>
-    <div class="card-body">
+    <div class="c-card__body p-0">
         <div class="table-responsive">
-            <table class="table table-hover align-middle">
-                <thead class="table-light">
+            <table class="table c-table align-middle mb-0">
+                <thead>
                     <tr>
                         <th>Despacho</th>
                         <th>Cliente</th>
                         <th>Estado</th>
                         <th>Rol Asignado</th>
                         <th>Fecha</th>
-                        <th>AcciÃ³n</th>
+                        <th>Acción</th>
                     </tr>
                 </thead>
                 <tbody>
                     <tr>
-                        <td><strong>2026-0045</strong></td>
+                        <td><span class="c-table__id">2026-0045</span></td>
                         <td>Importadora Sur SpA</td>
-                        <td><span class="badge bg-warning text-dark">En Puerto</span></td>
+                        <td><span class="c-badge c-badge--warning">En Puerto</span></td>
                         <td>Tramitador Aduanero</td>
                         <td>09-01-2026</td>
-                        <td><button class="btn btn-sm btn-outline-primary">Ver</button></td>
+                        <td><button class="btn c-btn c-btn--outline c-btn--sm">Ver</button></td>
                     </tr>
                     <tr>
-                        <td><strong>2026-0042</strong></td>
+                        <td><span class="c-table__id">2026-0042</span></td>
                         <td>Tech Solutions Ltd</td>
-                        <td><span class="badge bg-success">Finalizado</span></td>
-                        <td>FacturaciÃ³n</td>
+                        <td><span class="c-badge c-badge--success">Finalizado</span></td>
+                        <td>Facturación</td>
                         <td>08-01-2026</td>
-                        <td><button class="btn btn-sm btn-outline-primary">Ver</button></td>
+                        <td><button class="btn c-btn c-btn--outline c-btn--sm">Ver</button></td>
                     </tr>
                     <tr>
-                        <td><strong>2026-0050</strong></td>
+                        <td><span class="c-table__id">2026-0050</span></td>
                         <td>AgroChile Export</td>
-                        <td><span class="badge bg-info text-dark">Documental</span></td>
+                        <td><span class="c-badge c-badge--info">Documental</span></td>
                         <td>Pedidor</td>
                         <td>09-01-2026</td>
-                        <td><button class="btn btn-sm btn-outline-primary">Ver</button></td>
+                        <td><button class="btn c-btn c-btn--outline c-btn--sm">Ver</button></td>
                     </tr>
                 </tbody>
             </table>

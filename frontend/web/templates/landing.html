@@ -1,68 +1,225 @@
 {% extends "base.html" %}
 
 {% block content %}
-<div class="bg-dark text-white text-center py-5 mb-5" 
-     style="background: linear-gradient(rgba(33,37,41,0.85), rgba(33,37,41,0.85)), url('https://images.unsplash.com/photo-1494412519320-aa613dfb7738?ixlib=rb-4.0.3&auto=format&fit=crop&w=1920&q=80') no-repeat center center; background-size: cover; min-height: 60vh; display: flex; align-items: center; justify-content: center;">
-    
-    <div class="container">
-        <h1 class="display-3 fw-bold mb-3">Agencia de Aduanas Chile</h1>
-        <p class="lead mb-4 text-light opacity-75">Expertos en Comercio Exterior, Logística y Asesoría Aduanera Integral.</p>
-        <div class="d-flex gap-3 justify-content-center">
-            <a href="/login" class="btn btn-primary btn-lg rounded-pill px-5 fw-bold">Acceso Clientes</a>
-            <button class="btn btn-outline-light btn-lg rounded-pill px-5 fw-bold">Contáctanos</button>
+<!-- HERO SECTION -->
+<section class="c-hero">
+    <div class="c-hero__content">
+        <div class="c-hero__badge">Operador Económico Autorizado (OEA)</div>
+        <h1 class="c-hero__title">Agencia de Aduana Juan León</h1>
+        <p class="c-hero__subtitle">Transformamos la complejidad aduanera en simplicidad para tu negocio. Más de 50 años facilitando el comercio exterior de Chile.</p>
+        <div class="c-hero__actions">
+            <a href="/login" class="btn c-btn c-btn--accent c-btn--lg c-btn--pill">Acceso Clientes</a>
+            <a href="#contacto" class="btn c-btn c-btn--outline-light c-btn--lg c-btn--pill">Solicitar Asesoría</a>
         </div>
     </div>
-</div>
+</section>
 
-<div class="container mb-5">
-    <div class="text-center mb-5">
-        <h2 class="fw-bold">Nuestros Servicios</h2>
-        <p class="text-muted">Soluciones completas para su cadena logística</p>
+<!-- PROPUESTA DE VALOR -->
+<section class="c-value-props">
+    <div class="container">
+        <div class="row g-0">
+            <div class="col-md-3 col-6">
+                <div class="c-value-props__item">
+                    <i class="bi bi-shield-check"></i>
+                    <span>Certificación OEA</span>
+                </div>
+            </div>
+            <div class="col-md-3 col-6">
+                <div class="c-value-props__item">
+                    <i class="bi bi-clock-history"></i>
+                    <span>Monitoreo 24/7</span>
+                </div>
+            </div>
+            <div class="col-md-3 col-6">
+                <div class="c-value-props__item">
+                    <i class="bi bi-geo-alt"></i>
+                    <span>11 Sucursales</span>
+                </div>
+            </div>
+            <div class="col-md-3 col-6">
+                <div class="c-value-props__item">
+                    <i class="bi bi-graph-down-arrow"></i>
+                    <span>Costos Optimizados</span>
+                </div>
+            </div>
+        </div>
     </div>
-    
-    <div class="row g-4">
-        <div class="col-md-4">
-            <div class="card h-100 border-0 shadow-sm text-center p-4 hover-lift">
-                <div class="mb-3 text-primary"><i class="bi bi-airplane-engines fs-1"></i></div>
-                <h5 class="card-title fw-bold">Despacho Aéreo</h5>
-                <p class="card-text text-muted">Gestión rápida y eficiente para cargas críticas con tiempos de tránsito reducidos.</p>
+</section>
+
+<!-- SOBRE NOSOTROS -->
+<section class="py-5 my-5">
+    <div class="container">
+        <div class="row align-items-center g-5">
+            <div class="col-lg-6">
+                <span class="c-section-tag">Quiénes Somos</span>
+                <h2 class="c-section-title">Su aliado estratégico en comercio exterior</h2>
+                <p class="c-section-text">
+                    Nuestra Agencia de Aduana se funda hace más de 50 años con el objetivo de entregar un servicio de confianza y facilitar el proceso de importación y exportación ante el Servicio Nacional de Aduanas.
+                </p>
+                <p class="c-section-text">
+                    La experiencia de nuestro equipo profesional se refleja en la confianza que año tras año mantiene y atrae a nuestros clientes. Fuimos pioneros en tecnología, siendo en los años ochenta la primera Agencia de Aduana en tener un sistema informático propio.
+                </p>
+                <p class="c-section-text">
+                    Hoy buscamos ser una plataforma para visualizar mejores oportunidades que contribuyan a potenciar el negocio de nuestros clientes y ser un apoyo integral en sus decisiones de comercio exterior.
+                </p>
+            </div>
+            <div class="col-lg-6">
+                <div class="c-about-stats">
+                    <div class="c-about-stats__item">
+                        <div class="c-about-stats__value">+50</div>
+                        <div class="c-about-stats__label">Años de Experiencia</div>
+                    </div>
+                    <div class="c-about-stats__item">
+                        <div class="c-about-stats__value">11</div>
+                        <div class="c-about-stats__label">Sucursales en Chile</div>
+                    </div>
+                    <div class="c-about-stats__item">
+                        <div class="c-about-stats__value">28</div>
+                        <div class="c-about-stats__label">Tratados Comerciales</div>
+                    </div>
+                    <div class="c-about-stats__item">
+                        <div class="c-about-stats__value">64</div>
+                        <div class="c-about-stats__label">Mercados Conectados</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- SERVICIOS -->
+<section class="c-services-section">
+    <div class="container">
+        <div class="text-center mb-5">
+            <span class="c-section-tag c-section-tag--light">Nuestros Servicios</span>
+            <h2 class="c-section-title c-section-title--light">Soluciones integrales para su cadena logística</h2>
+        </div>
+        
+        <div class="row g-4">
+            <div class="col-lg-4 col-md-6">
+                <div class="c-service-card" style="animation-delay: 100ms;">
+                    <div class="c-service-card__icon">
+                        <i class="bi bi-box-arrow-in-down"></i>
+                    </div>
+                    <h5 class="c-service-card__title">Importaciones</h5>
+                    <p class="c-service-card__text">Internación segura de contenedores y mercadería desde cualquier lugar del mundo. Gestión aduanera, pago de impuestos, retiro en puerto y entrega en destino.</p>
+                </div>
+            </div>
+            
+            <div class="col-lg-4 col-md-6">
+                <div class="c-service-card" style="animation-delay: 200ms;">
+                    <div class="c-service-card__icon">
+                        <i class="bi bi-box-arrow-up"></i>
+                    </div>
+                    <h5 class="c-service-card__title">Exportaciones</h5>
+                    <p class="c-service-card__text">Facilitamos la gestión aduanera de exportación, asesoramos en acuerdos comerciales, logística de transporte, Incoterms y certificaciones requeridas.</p>
+                </div>
+            </div>
+            
+            <div class="col-lg-4 col-md-6">
+                <div class="c-service-card" style="animation-delay: 300ms;">
+                    <div class="c-service-card__icon">
+                        <i class="bi bi-file-earmark-text"></i>
+                    </div>
+                    <h5 class="c-service-card__title">Asesoría Aduanera</h5>
+                    <p class="c-service-card__text">Planificación de cláusulas de venta, documentación, códigos arancelarios, tiempos y costos asociados a la compra y venta de mercadería en el extranjero.</p>
+                </div>
+            </div>
+            
+            <div class="col-lg-4 col-md-6">
+                <div class="c-service-card" style="animation-delay: 400ms;">
+                    <div class="c-service-card__icon">
+                        <i class="bi bi-patch-check"></i>
+                    </div>
+                    <h5 class="c-service-card__title">Certificaciones</h5>
+                    <p class="c-service-card__text">Gestionamos exigencias sanitarias y fitosanitarias con SAG, SEREMI de Salud, ISP, SERNAPESCA y otros organismos para garantizar el cumplimiento normativo.</p>
+                </div>
+            </div>
+            
+            <div class="col-lg-4 col-md-6">
+                <div class="c-service-card" style="animation-delay: 500ms;">
+                    <div class="c-service-card__icon">
+                        <i class="bi bi-globe-americas"></i>
+                    </div>
+                    <h5 class="c-service-card__title">Tratados de Libre Comercio</h5>
+                    <p class="c-service-card__text">Verificamos si sus bienes están suscritos a acuerdos comerciales vigentes para eliminar o reducir impuestos aduaneros y maximizar sus beneficios.</p>
+                </div>
+            </div>
+            
+            <div class="col-lg-4 col-md-6">
+                <div class="c-service-card" style="animation-delay: 600ms;">
+                    <div class="c-service-card__icon">
+                        <i class="bi bi-shield-lock"></i>
+                    </div>
+                    <h5 class="c-service-card__title">Fletes y Seguros</h5>
+                    <p class="c-service-card__text">Seguros de carga y transporte a la medida. Póliza flotante anual que cubre todos los tránsitos sin negociar términos caso a caso.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- COBERTURA -->
+<section class="py-5 my-5">
+    <div class="container">
+        <div class="text-center mb-5">
+            <span class="c-section-tag">Cobertura Nacional</span>
+            <h2 class="c-section-title">Presencia en los principales puertos de Chile</h2>
+            <p class="c-section-subtitle">Oficinas centrales y operaciones en puntos estratégicos del territorio nacional</p>
+        </div>
+        
+        <div class="row g-4">
+            <div class="col-lg-3 col-md-6">
+                <div class="c-location-card c-location-card--primary">
+                    <div class="c-location-card__icon"><i class="bi bi-building"></i></div>
+                    <h6 class="c-location-card__title">Valparaíso</h6>
+                    <p class="c-location-card__text">Casa Matriz - Principal puerto del país</p>
+                </div>
+            </div>
+            <div class="col-lg-3 col-md-6">
+                <div class="c-location-card">
+                    <div class="c-location-card__icon"><i class="bi bi-geo-alt"></i></div>
+                    <h6 class="c-location-card__title">Santiago</h6>
+                    <p class="c-location-card__text">Capital y centro de negocios</p>
+                </div>
+            </div>
+            <div class="col-lg-3 col-md-6">
+                <div class="c-location-card">
+                    <div class="c-location-card__icon"><i class="bi bi-airplane"></i></div>
+                    <h6 class="c-location-card__title">Aeropuerto SCL</h6>
+                    <p class="c-location-card__text">Principal aeropuerto internacional</p>
+                </div>
+            </div>
+            <div class="col-lg-3 col-md-6">
+                <div class="c-location-card">
+                    <div class="c-location-card__icon"><i class="bi bi-signpost-split"></i></div>
+                    <h6 class="c-location-card__title">Los Andes</h6>
+                    <p class="c-location-card__text">Paso terrestre Chile-Argentina</p>
+                </div>
             </div>
         </div>
         
-        <div class="col-md-4">
-            <div class="card h-100 border-0 shadow-sm text-center p-4 hover-lift">
-                <div class="mb-3 text-primary"><i class="bi bi-box-seam fs-1"></i></div>
-                <h5 class="card-title fw-bold">Carga Marítima</h5>
-                <p class="card-text text-muted">Coordinación de contenedores FCL y LCL desde y hacia cualquier puerto del mundo.</p>
-            </div>
-        </div>
-        
-        <div class="col-md-4">
-            <div class="card h-100 border-0 shadow-sm text-center p-4 hover-lift">
-                <div class="mb-3 text-primary"><i class="bi bi-file-earmark-text fs-1"></i></div>
-                <h5 class="card-title fw-bold">Asesoría Aduanera</h5>
-                <p class="card-text text-muted">Expertos en normativa, tratados de libre comercio y clasificación arancelaria.</p>
-            </div>
+        <div class="c-locations-more">
+            <p>También en: <strong>San Antonio</strong>, <strong>Arica</strong>, <strong>Iquique</strong>, <strong>Antofagasta</strong>, <strong>Chañaral</strong> y <strong>Talcahuano</strong></p>
         </div>
     </div>
-</div>
+</section>
 
-<div class="bg-primary text-white py-5 mb-5">
+<!-- CTA -->
+<section class="c-cta-section" id="contacto">
     <div class="container">
-        <div class="row text-center">
-            <div class="col-md-4 mb-3 mb-md-0">
-                <h2 class="fw-bold display-4">+25</h2>
-                <p class="mb-0 opacity-75 text-uppercase fw-bold text-small">Años de Experiencia</p>
-            </div>
-            <div class="col-md-4 mb-3 mb-md-0">
-                <h2 class="fw-bold display-4">15k</h2>
-                <p class="mb-0 opacity-75 text-uppercase fw-bold text-small">Despachos Anuales</p>
-            </div>
-            <div class="col-md-4">
-                <h2 class="fw-bold display-4">100%</h2>
-                <p class="mb-0 opacity-75 text-uppercase fw-bold text-small">Cumplimiento Normativo</p>
+        <div class="c-cta-content">
+            <h2 class="c-cta-title">Comience a importar o exportar con confianza</h2>
+            <p class="c-cta-text">Nuestro equipo está preparado para entregar un servicio de calidad, personalizado y adaptado a las necesidades de cada cliente.</p>
+            <div class="c-cta-contact">
+                <a href="mailto:contacto@ajleon.com" class="btn c-btn c-btn--accent c-btn--lg c-btn--pill">
+                    <i class="bi bi-envelope me-2"></i> contacto@ajleon.com
+                </a>
+                <span class="c-cta-phone">
+                    <i class="bi bi-telephone"></i> (32) 235 0500
+                </span>
             </div>
         </div>
     </div>
-</div>
+</section>
 {% endblock %}
