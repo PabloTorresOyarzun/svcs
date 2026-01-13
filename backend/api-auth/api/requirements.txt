@@ -1,0 +1,9 @@
+litestar[standard]
+uvicorn[standard]
+httpx
+python-jose[cryptography]
+pydantic[email]
+pydantic-settings
+asyncpg
+sqlalchemy[asyncio]
+structlog

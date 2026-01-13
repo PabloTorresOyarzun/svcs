@@ -1,0 +1,109 @@
+/* --- LAYOUT GENERAL --- */
+body {
+    overflow-x: hidden;
+}
+
+/* NAVBAR & ALERTA */
+.navbar { z-index: 1040; }
+
+.alert-bar {
+    top: 56px;
+    z-index: 1030;
+    height: 32px;
+    line-height: 1.2;
+}
+
+/* SIDEBAR FIXED */
+.sidebar {
+    position: fixed;
+    left: 0;
+    width: 240px;
+    bottom: 0; /* CORRECCIÃ“N: Ocupa todo el alto disponible */
+    z-index: 1020; /* Menor que el footer (1030) */
+    overflow-y: auto;
+    transition: transform 0.3s ease-in-out;
+    border-right: 1px solid #dee2e6;
+}
+
+.sidebar.toggled {
+    transform: translateX(-240px);
+}
+
+/* SIDEBAR ITEMS */
+.nav-header {
+    margin-bottom: 0.25rem;
+    color: #6c757d;
+}
+
+.nav-link {
+    color: #495057;
+    font-size: 0.9rem;
+    padding: 0.5rem 1rem;
+    transition: all 0.2s;
+}
+
+.nav-link:hover {
+    background-color: #f8f9fa;
+    color: #0d6efd !important;
+    padding-left: 1.5rem !important;
+}
+
+/* MAIN CONTENT */
+.main-content {
+    margin-left: 240px;
+    transition: margin-left 0.3s ease-in-out;
+}
+
+.main-content.toggled {
+    margin-left: 0;
+}
+
+/* BREADCRUMB */
+.breadcrumb {
+    background-color: transparent;
+    padding: 0;
+    margin-bottom: 0;
+}
+.breadcrumb-item + .breadcrumb-item::before {
+    color: #adb5bd;
+}
+.breadcrumb-item a:hover {
+    text-decoration: underline !important;
+    color: #0d6efd !important;
+}
+
+/* AnimaciÃ³n para el botÃ³n subir */
+/* ... resto de tu CSS ... */
+
+/* ESTILOS BOTÃ“N VOLVER ARRIBA */
+#btnBackToTop {
+    position: fixed;
+    bottom: 25px;
+    right: 25px;
+    z-index: 2000;
+    width: 50px;
+    height: 50px;
+    
+    /* Estado inicial: Oculto */
+    display: none; 
+    
+    /* Centrar el icono manualmente (ya que quitamos d-flex) */
+    padding: 0;
+    text-align: center;
+    line-height: 46px; /* Ajuste fino para centrar verticalmente el icono */
+    
+    /* AnimaciÃ³n de entrada/salida */
+    transition: transform 0.3s ease, background-color 0.3s;
+}
+
+#btnBackToTop:hover {
+    transform: translateY(-5px); /* Efecto de levitaciÃ³n al pasar el mouse */
+    background-color: #0b5ed7; /* Color un poco mÃ¡s oscuro */
+}
+/* Responsive */
+@media (max-width: 768px) {
+    .sidebar { transform: translateX(-240px); }
+    .sidebar.toggled { transform: translateX(0); }
+    .main-content { margin-left: 0; }
+    .main-content.toggled { margin-left: 0; }
+}

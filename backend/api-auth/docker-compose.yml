@@ -1,0 +1,207 @@
+services:
+  # ============================================================
+  # BASE DE DATOS EXCLUSIVA PARA KEYCLOAK
+  # Aislada de la base de negocio por seguridad y disponibilidad
+  # ============================================================
+  postgres-keycloak:
+    image: postgres:18.1-alpine3.23
+    container_name: postgres-keycloak
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: ${KC_DB_USER}
+      POSTGRES_PASSWORD: ${KC_DB_PASSWORD}
+      POSTGRES_DB: ${KC_DB_NAME}
+    volumes:
+      - postgres_keycloak_data:/var/lib/postgresql/data
+    networks:
+      - auth-internal
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${KC_DB_USER} -d ${KC_DB_NAME}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    deploy:
+      resources:
+        limits:
+          memory: 512M
+
+  # ============================================================
+  # KEYCLOAK - IDENTITY PROVIDER
+  # Configurado con hardening OWASP para entornos regulados
+  # ============================================================
+  keycloak:
+    image: quay.io/keycloak/keycloak:26.4.7
+    container_name: keycloak
+    restart: unless-stopped
+    command: start --import-realm
+    environment:
+      # ------------------------------------------------------------
+      # Conexion a base de datos
+      # ------------------------------------------------------------
+      KC_DB: postgres
+      KC_DB_URL: jdbc:postgresql://postgres-keycloak:5432/${KC_DB_NAME}
+      KC_DB_USERNAME: ${KC_DB_USER}
+      KC_DB_PASSWORD: ${KC_DB_PASSWORD}
+
+      # ------------------------------------------------------------
+      # Credenciales administrador inicial
+      # ------------------------------------------------------------
+      KC_BOOTSTRAP_ADMIN_USERNAME: ${KC_ADMIN_USER}
+      KC_BOOTSTRAP_ADMIN_PASSWORD: ${KC_ADMIN_PASSWORD}
+
+      # ------------------------------------------------------------
+      # Configuracion de red y proxy
+      # ------------------------------------------------------------
+      KC_HOSTNAME: ${KC_HOSTNAME}
+      KC_HOSTNAME_STRICT: false
+      KC_HTTP_ENABLED: true
+      KC_PROXY_HEADERS: xforwarded
+
+      # ------------------------------------------------------------
+      # OWASP: Configuracion de seguridad
+      # ------------------------------------------------------------
+      # Health checks para orquestacion
+      KC_HEALTH_ENABLED: true
+      KC_METRICS_ENABLED: true
+
+      # ------------------------------------------------------------
+      # Logging estructurado para auditoria
+      # ------------------------------------------------------------
+      KC_LOG: console
+      KC_LOG_LEVEL: INFO
+      QUARKUS_LOG_CATEGORY__ORG_KEYCLOAK_EVENTS__LEVEL: DEBUG
+
+    ports:
+      # LOCAL: Acceso directo para desarrollo
+      - "127.0.0.1:8080:8080"
+    volumes:
+      - ./keycloak/realm-agencia.json:/opt/keycloak/data/import/realm-agencia.json:ro
+    networks:
+      - auth-internal
+      - auth-external
+    depends_on:
+      postgres-keycloak:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD-SHELL", "cat < /dev/null > /dev/tcp/127.0.0.1/8080 || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 12
+      start_period: 90s
+    deploy:
+      resources:
+        limits:
+          memory: 1G
+    # ============================================================
+    # PRODUCCION: Descomentar labels cuando actives Traefik
+    # ============================================================
+    # labels:
+    #   - "traefik.enable=true"
+    #   - "traefik.http.routers.keycloak.rule=Host(`${KC_HOSTNAME}`)"
+    #   - "traefik.http.routers.keycloak.entrypoints=websecure"
+    #   - "traefik.http.routers.keycloak.tls.certresolver=letsencrypt"
+    #   - "traefik.http.services.keycloak.loadbalancer.server.port=8080"
+
+  # ============================================================
+  # LITESTAR API - INTERMEDIARIO DE AUTENTICACION
+  # Expone endpoints REST para CRUD de usuarios
+  # Sincroniza datos minimos con base de negocio
+  # ============================================================
+  litestar-auth:
+    build:
+      context: ./api
+      dockerfile: Dockerfile
+    container_name: litestar-auth
+    restart: unless-stopped
+    environment:
+      # ------------------------------------------------------------
+      # Configuracion de la aplicacion
+      # ------------------------------------------------------------
+      APP_ENV: ${APP_ENV:-development}
+      APP_DEBUG: ${APP_DEBUG:-false}
+      APP_SECRET_KEY: ${APP_SECRET_KEY}
+
+      # ------------------------------------------------------------
+      # Conexion a Keycloak
+      # ------------------------------------------------------------
+      KEYCLOAK_URL: http://keycloak:8080
+      KEYCLOAK_REALM: ${KC_REALM}
+      KEYCLOAK_CLIENT_ID: ${KC_CLIENT_ID}
+      KEYCLOAK_CLIENT_SECRET: ${KC_CLIENT_SECRET}
+      KEYCLOAK_ADMIN_USER: ${KC_ADMIN_USER}
+      KEYCLOAK_ADMIN_PASSWORD: ${KC_ADMIN_PASSWORD}
+
+      # ------------------------------------------------------------
+      # Conexion a base de datos de negocio (sincronizacion)
+      # Via red externa al compose de postgres
+      # ------------------------------------------------------------
+      BUSINESS_DB_HOST: ${BUSINESS_DB_HOST}
+      BUSINESS_DB_PORT: ${BUSINESS_DB_PORT:-5432}
+      BUSINESS_DB_USER: ${BUSINESS_DB_USER}
+      BUSINESS_DB_PASSWORD: ${BUSINESS_DB_PASSWORD}
+      BUSINESS_DB_NAME: ${BUSINESS_DB_NAME}
+
+      # ------------------------------------------------------------
+      # OWASP: Configuracion de seguridad
+      # ------------------------------------------------------------
+      CORS_ORIGINS: ${CORS_ORIGINS:-http://localhost:3000}
+      RATE_LIMIT_REQUESTS: ${RATE_LIMIT_REQUESTS:-100}
+      RATE_LIMIT_PERIOD: ${RATE_LIMIT_PERIOD:-60}
+
+    ports:
+      # LOCAL: Acceso directo para desarrollo
+      - "127.0.0.1:8000:8000"
+    networks:
+      - auth-internal
+      - auth-external
+      - backend  # Red externa para conectar con postgres de negocio
+    depends_on:
+      keycloak:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+    deploy:
+      resources:
+        limits:
+          memory: 256M
+    # ============================================================
+    # PRODUCCION: Descomentar labels cuando actives Traefik
+    # ============================================================
+    # labels:
+    #   - "traefik.enable=true"
+    #   - "traefik.http.routers.auth-api.rule=Host(`${API_HOSTNAME}`)"
+    #   - "traefik.http.routers.auth-api.entrypoints=websecure"
+    #   - "traefik.http.routers.auth-api.tls.certresolver=letsencrypt"
+    #   - "traefik.http.services.auth-api.loadbalancer.server.port=8000"
+    #   - "traefik.http.routers.auth-api.middlewares=security-headers,rate-limit"
+    #   - "traefik.http.middlewares.security-headers.headers.stsSeconds=31536000"
+    #   - "traefik.http.middlewares.security-headers.headers.stsIncludeSubdomains=true"
+    #   - "traefik.http.middlewares.security-headers.headers.frameDeny=true"
+    #   - "traefik.http.middlewares.security-headers.headers.contentTypeNosniff=true"
+    #   - "traefik.http.middlewares.security-headers.headers.browserXssFilter=true"
+    #   - "traefik.http.middlewares.security-headers.headers.referrerPolicy=strict-origin-when-cross-origin"
+    #   - "traefik.http.middlewares.security-headers.headers.permissionsPolicy=geolocation=(),microphone=(),camera=()"
+    #   - "traefik.http.middlewares.rate-limit.ratelimit.average=100"
+    #   - "traefik.http.middlewares.rate-limit.ratelimit.burst=50"
+
+networks:
+  # Red interna: Comunicacion entre servicios de autenticacion
+  auth-internal:
+    driver: bridge
+    internal: true
+
+  # Red externa: Exposicion controlada
+  auth-external:
+    driver: bridge
+
+  # Red externa: Conexion con compose de base de datos de negocio
+  # Debe existir previamente (creada por el otro compose)
+  backend:
+    external: true
+
+volumes:
+  postgres_keycloak_data:
+    driver: local

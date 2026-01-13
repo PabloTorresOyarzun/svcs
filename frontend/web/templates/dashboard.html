@@ -1,0 +1,119 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h2 class="mb-4">Bienvenido, {{ user_name }}</h2>
+
+<div class="row g-4 mb-5">
+    <div class="col-md-3">
+        <div class="card border-0 shadow-sm h-100 border-start border-4 border-primary">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <h6 class="text-muted text-uppercase mb-1">Despachos Activos</h6>
+                        <h2 class="mb-0">124</h2>
+                    </div>
+                    <div class="bg-primary bg-opacity-10 p-3 rounded">
+                        <i class="bi bi-folder-fill text-primary fs-3"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-3">
+        <div class="card border-0 shadow-sm h-100 border-start border-4 border-success">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <h6 class="text-muted text-uppercase mb-1">Por Imputar (Caja)</h6>
+                        <h3 class="mb-0 text-success">$ 4.5M</h3>
+                    </div>
+                    <div class="bg-success bg-opacity-10 p-3 rounded">
+                        <i class="bi bi-currency-dollar text-success fs-3"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-3">
+        <div class="card border-0 shadow-sm h-100 border-start border-4 border-warning">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <h6 class="text-muted text-uppercase mb-1">Retiros Puerto</h6>
+                        <h2 class="mb-0">8</h2>
+                    </div>
+                    <div class="bg-warning bg-opacity-10 p-3 rounded">
+                        <i class="bi bi-truck text-warning fs-3"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-3">
+        <div class="card border-0 shadow-sm h-100 border-start border-4 border-danger">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <h6 class="text-muted text-uppercase mb-1">Facturas Pendientes</h6>
+                        <h2 class="mb-0">12</h2>
+                    </div>
+                    <div class="bg-danger bg-opacity-10 p-3 rounded">
+                        <i class="bi bi-receipt text-danger fs-3"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="card border-0 shadow-sm">
+    <div class="card-header bg-white py-3">
+        <h5 class="mb-0">Ãšltimos Movimientos</h5>
+    </div>
+    <div class="card-body">
+        <div class="table-responsive">
+            <table class="table table-hover align-middle">
+                <thead class="table-light">
+                    <tr>
+                        <th>Despacho</th>
+                        <th>Cliente</th>
+                        <th>Estado</th>
+                        <th>Rol Asignado</th>
+                        <th>Fecha</th>
+                        <th>AcciÃ³n</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><strong>2026-0045</strong></td>
+                        <td>Importadora Sur SpA</td>
+                        <td><span class="badge bg-warning text-dark">En Puerto</span></td>
+                        <td>Tramitador Aduanero</td>
+                        <td>09-01-2026</td>
+                        <td><button class="btn btn-sm btn-outline-primary">Ver</button></td>
+                    </tr>
+                    <tr>
+                        <td><strong>2026-0042</strong></td>
+                        <td>Tech Solutions Ltd</td>
+                        <td><span class="badge bg-success">Finalizado</span></td>
+                        <td>FacturaciÃ³n</td>
+                        <td>08-01-2026</td>
+                        <td><button class="btn btn-sm btn-outline-primary">Ver</button></td>
+                    </tr>
+                    <tr>
+                        <td><strong>2026-0050</strong></td>
+                        <td>AgroChile Export</td>
+                        <td><span class="badge bg-info text-dark">Documental</span></td>
+                        <td>Pedidor</td>
+                        <td>09-01-2026</td>
+                        <td><button class="btn btn-sm btn-outline-primary">Ver</button></td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}

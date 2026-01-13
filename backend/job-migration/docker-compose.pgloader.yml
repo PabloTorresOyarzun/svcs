@@ -1,0 +1,27 @@
+services:
+  pgloader:
+    image: ghcr.io/dimitri/pgloader:latest
+    container_name: pgloader
+    restart: "no"
+    env_file:
+      - .env
+    volumes:
+      # Montamos el archivo como plantilla de solo lectura
+      - ./config/migration.load:/migration.template:ro
+    networks:
+      - backend
+    extra_hosts:
+      - "ares.jleon.lan:172.16.0.240"
+    environment:
+      - TDS_MAX_CONN=1024
+    # Comando para sustituir variables y ejecutar pgloader
+    command: >
+      sh -c "
+      sed -e 's|__MSSQL_BASE_URL__|'\"$MSSQL_BASE_URL\"'|g' \
+          -e 's|__PG_TARGET_URL__|'\"$PG_TARGET_URL\"'|g' \
+          /migration.template > /migration.load && \
+      pgloader --verbose /migration.load"
+
+networks:
+  backend:
+    external: true

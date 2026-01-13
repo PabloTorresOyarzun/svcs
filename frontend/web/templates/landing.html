@@ -1,0 +1,68 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="bg-dark text-white text-center py-5 mb-5" 
+     style="background: linear-gradient(rgba(33,37,41,0.85), rgba(33,37,41,0.85)), url('https://images.unsplash.com/photo-1494412519320-aa613dfb7738?ixlib=rb-4.0.3&auto=format&fit=crop&w=1920&q=80') no-repeat center center; background-size: cover; min-height: 60vh; display: flex; align-items: center; justify-content: center;">
+    
+    <div class="container">
+        <h1 class="display-3 fw-bold mb-3">Agencia de Aduanas Chile</h1>
+        <p class="lead mb-4 text-light opacity-75">Expertos en Comercio Exterior, Logística y Asesoría Aduanera Integral.</p>
+        <div class="d-flex gap-3 justify-content-center">
+            <a href="/login" class="btn btn-primary btn-lg rounded-pill px-5 fw-bold">Acceso Clientes</a>
+            <button class="btn btn-outline-light btn-lg rounded-pill px-5 fw-bold">Contáctanos</button>
+        </div>
+    </div>
+</div>
+
+<div class="container mb-5">
+    <div class="text-center mb-5">
+        <h2 class="fw-bold">Nuestros Servicios</h2>
+        <p class="text-muted">Soluciones completas para su cadena logística</p>
+    </div>
+    
+    <div class="row g-4">
+        <div class="col-md-4">
+            <div class="card h-100 border-0 shadow-sm text-center p-4 hover-lift">
+                <div class="mb-3 text-primary"><i class="bi bi-airplane-engines fs-1"></i></div>
+                <h5 class="card-title fw-bold">Despacho Aéreo</h5>
+                <p class="card-text text-muted">Gestión rápida y eficiente para cargas críticas con tiempos de tránsito reducidos.</p>
+            </div>
+        </div>
+        
+        <div class="col-md-4">
+            <div class="card h-100 border-0 shadow-sm text-center p-4 hover-lift">
+                <div class="mb-3 text-primary"><i class="bi bi-box-seam fs-1"></i></div>
+                <h5 class="card-title fw-bold">Carga Marítima</h5>
+                <p class="card-text text-muted">Coordinación de contenedores FCL y LCL desde y hacia cualquier puerto del mundo.</p>
+            </div>
+        </div>
+        
+        <div class="col-md-4">
+            <div class="card h-100 border-0 shadow-sm text-center p-4 hover-lift">
+                <div class="mb-3 text-primary"><i class="bi bi-file-earmark-text fs-1"></i></div>
+                <h5 class="card-title fw-bold">Asesoría Aduanera</h5>
+                <p class="card-text text-muted">Expertos en normativa, tratados de libre comercio y clasificación arancelaria.</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="bg-primary text-white py-5 mb-5">
+    <div class="container">
+        <div class="row text-center">
+            <div class="col-md-4 mb-3 mb-md-0">
+                <h2 class="fw-bold display-4">+25</h2>
+                <p class="mb-0 opacity-75 text-uppercase fw-bold text-small">Años de Experiencia</p>
+            </div>
+            <div class="col-md-4 mb-3 mb-md-0">
+                <h2 class="fw-bold display-4">15k</h2>
+                <p class="mb-0 opacity-75 text-uppercase fw-bold text-small">Despachos Anuales</p>
+            </div>
+            <div class="col-md-4">
+                <h2 class="fw-bold display-4">100%</h2>
+                <p class="mb-0 opacity-75 text-uppercase fw-bold text-small">Cumplimiento Normativo</p>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
