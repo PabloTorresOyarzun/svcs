@@ -1,0 +1,150 @@
+services:
+  # ============================================================
+  # PRODUCCION: Descomentar Traefik cuando tengas DNS configurado
+  # ============================================================
+  # traefik:
+  #   image: traefik:v3.6
+  #   container_name: traefik
+  #   restart: unless-stopped
+  #   command:
+  #     - "--api.dashboard=true"
+  #     - "--providers.docker=true"
+  #     - "--providers.docker.exposedbydefault=false"
+  #     - "--entrypoints.web.address=:80"
+  #     - "--entrypoints.websecure.address=:443"
+  #     - "--entrypoints.web.http.redirections.entrypoint.to=websecure"
+  #     - "--entrypoints.web.http.redirections.entrypoint.scheme=https"
+  #     - "--certificatesresolvers.letsencrypt.acme.email=${ACME_EMAIL}"
+  #     - "--certificatesresolvers.letsencrypt.acme.storage=/letsencrypt/acme.json"
+  #     - "--certificatesresolvers.letsencrypt.acme.httpchallenge.entrypoint=web"
+  #   ports:
+  #     - "80:80"
+  #     - "443:443"
+  #   volumes:
+  #     - /var/run/docker.sock:/var/run/docker.sock:ro
+  #     - traefik_certs:/letsencrypt
+  #   networks:
+  #     - backend
+  #   labels:
+  #     - "traefik.enable=true"
+  #     - "traefik.http.routers.dashboard.rule=Host(`${TRAEFIK_DOMAIN}`)"
+  #     - "traefik.http.routers.dashboard.entrypoints=websecure"
+  #     - "traefik.http.routers.dashboard.tls.certresolver=letsencrypt"
+  #     - "traefik.http.routers.dashboard.service=api@internal"
+  #     - "traefik.http.routers.dashboard.middlewares=auth"
+  #     - "traefik.http.middlewares.auth.basicauth.users=${TRAEFIK_AUTH}"
+
+  postgres:
+    image: postgres:18.1-alpine3.23
+    container_name: postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DB}
+      TZ: America/Santiago
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./config/pg_hba.conf:/etc/postgresql/pg_hba.conf:ro
+      - ./config/postgresql.conf:/etc/postgresql/postgresql.conf:ro
+    command: postgres -c config_file=/etc/postgresql/postgresql.conf -c hba_file=/etc/postgresql/pg_hba.conf
+    ports:
+      - "5432:5432"
+    networks:
+      - backend
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
+    deploy:
+      resources:
+        limits:
+          memory: 2G
+
+  pgbouncer:
+    image: edoburu/pgbouncer:latest
+    container_name: pgbouncer
+    restart: unless-stopped
+    environment:
+      DB_HOST: postgres
+      DB_PORT: 5432
+      DB_USER: ${POSTGRES_USER}
+      DB_PASSWORD: ${POSTGRES_PASSWORD}
+      DB_NAME: "*"
+      POOL_MODE: transaction
+      MAX_CLIENT_CONN: 200
+      DEFAULT_POOL_SIZE: 25
+      MIN_POOL_SIZE: 5
+      RESERVE_POOL_SIZE: 5
+      AUTH_TYPE: scram-sha-256
+      TZ: America/Santiago
+    ports:
+      - "6432:5432"
+    networks:
+      - backend
+    depends_on:
+      postgres:
+        condition: service_healthy
+
+  pgadmin:
+    image: dpage/pgadmin4:latest
+    container_name: pgadmin
+    restart: unless-stopped
+    entrypoint: >
+      /bin/sh -c "
+      chmod 600 /pgpass;
+      /entrypoint.sh
+      "
+    environment:
+      PGADMIN_DEFAULT_EMAIL: ${PGADMIN_EMAIL}
+      PGADMIN_DEFAULT_PASSWORD: ${PGADMIN_PASSWORD}
+      PGADMIN_CONFIG_ENHANCED_COOKIE_PROTECTION: "True"
+      PGADMIN_CONFIG_LOGIN_BANNER: "'Sistema de Gestion Aduanera - Acceso Restringido'"
+      PGADMIN_CONFIG_CONSOLE_LOG_LEVEL: 40
+      PGADMIN_CONFIG_MAX_LOGIN_ATTEMPTS: 5
+      PGADMIN_CONFIG_SESSION_EXPIRATION_TIME: 30
+      PGADMIN_CONFIG_PROXY_X_HOST_COUNT: 1
+      PGADMIN_CONFIG_PROXY_X_PREFIX_COUNT: 1
+      TZ: America/Santiago
+    volumes:
+      - pgadmin_data:/var/lib/pgadmin
+      - ./config/servers.json:/pgadmin4/servers.json:ro
+      - ./config/pgpass:/pgpass
+    ports:
+      # LOCAL: Acceso directo para pruebas
+      - "5050:80"
+    networks:
+      - backend
+    depends_on:
+      - pgbouncer
+    # ============================================================
+    # PRODUCCION: Descomentar labels cuando actives Traefik
+    # ============================================================
+    # labels:
+    #   - "traefik.enable=true"
+    #   - "traefik.http.routers.pgadmin.rule=Host(`${PGADMIN_DOMAIN}`)"
+    #   - "traefik.http.routers.pgadmin.entrypoints=websecure"
+    #   - "traefik.http.routers.pgadmin.tls.certresolver=letsencrypt"
+    #   - "traefik.http.services.pgadmin.loadbalancer.server.port=80"
+    #   - "traefik.http.routers.pgadmin.middlewares=security-headers"
+    #   - "traefik.http.middlewares.security-headers.headers.stsSeconds=31536000"
+    #   - "traefik.http.middlewares.security-headers.headers.stsIncludeSubdomains=true"
+    #   - "traefik.http.middlewares.security-headers.headers.frameDeny=true"
+    #   - "traefik.http.middlewares.security-headers.headers.contentTypeNosniff=true"
+    #   - "traefik.http.middlewares.security-headers.headers.browserXssFilter=true"
+
+networks:
+  backend:
+    driver: bridge
+    name: backend
+
+volumes:
+  postgres_data:
+    driver: local
+  pgadmin_data:
+    driver: local
+  # PRODUCCION: Descomentar cuando actives Traefik
+  # traefik_certs:
+  #   driver: local
