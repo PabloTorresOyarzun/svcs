@@ -120,18 +120,27 @@ body {
     height: var(--navbar-height);
     z-index: 1040;
     border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    
     display: flex;
     align-items: center;
+    padding-right: 0;
+    
+    /* AGREGAR ESTA LÍNEA: */
+    /* Esto obliga a que el botón y el contenedor se mantengan 
+       siempre en la misma línea horizontal, prohibiendo que "bajen" */
+    flex-wrap: nowrap !important; 
 }
 
+/* MODIFICACIÓN AQUÍ: */
 .c-navbar .container-fluid {
     display: flex;
     align-items: center;
-    padding-left: var(--spacing-sm);
+    padding-left: 0 !important; /* El botón ya da el espacio, no necesitamos padding */
     padding-right: var(--spacing-xl);
     max-width: 1600px;
     margin: 0 auto;
     height: 100%;
+    flex-grow: 1;
 }
 
 .c-navbar .navbar-brand {
@@ -1342,10 +1351,12 @@ body {
     }
 
     /* Navbar container en móvil */
+    @media (max-width: 767.98px) {
     .c-navbar .container-fluid {
-        padding-left: var(--spacing-md);
+        padding-left: 0 !important;
         padding-right: var(--spacing-md);
     }
+
 
     /* Barra de alerta responsive */
     .c-alert-bar {
@@ -1368,7 +1379,7 @@ body {
     }
 
     .c-navbar__logo {
-        height: 42px;
+        margin-left: 5px; /* Reducido de 15px a 5px en móvil */
     }
 
     .c-navbar__toggle,

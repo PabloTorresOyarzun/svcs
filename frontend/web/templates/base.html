@@ -12,17 +12,19 @@
 <body class="d-flex flex-column min-vh-100">
 
     <nav class="navbar fixed-top c-navbar" role="navigation" aria-label="Navegación principal">
-        <div class="container-fluid">
-            {% if request.url.path != '/' and request.url.path != '/login' %}
-            <button class="btn c-navbar__toggle me-2 d-flex align-items-center justify-content-center"
+        
+        {% if request.url.path != '/' and request.url.path != '/login' %}
+            <button class="btn c-navbar__toggle ms-2 ms-md-3 d-flex align-items-center justify-content-center"
                     id="sidebarToggle"
                     aria-label="Abrir menú lateral"
                     title="Menú">
                 <i class="bi bi-list fs-4"></i>
             </button>
-            {% else %}
-            <div class="c-navbar__spacer me-2"></div>
-            {% endif %}
+        {% else %}
+            <div class="c-navbar__toggle ms-2 ms-md-3" style="visibility: hidden; pointer-events: none;"></div>
+        {% endif %}
+
+        <div class="container-fluid ps-0">
 
             <a class="navbar-brand d-flex align-items-center" href="/" aria-label="Ir al inicio">
                 <img src="/static/img/logo.png" alt="Agencia de Aduana Juan León" class="c-navbar__logo">
