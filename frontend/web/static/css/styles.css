@@ -74,6 +74,7 @@
     /* Layout */
     --navbar-height: 60px;
     --sidebar-width: 260px;
+    --footer-height: 50px; /* NUEVA VARIABLE PARA CONTROLAR EL ALTO DEL FOOTER */
     --alert-height: 36px;
     
     /* Transiciones */
@@ -255,33 +256,33 @@ body {
 
 
 /* ============================================
-   COMPONENTE: SIDEBAR (MODIFICADO)
+   COMPONENTE: SIDEBAR (FIXED & ADJUSTED)
    ============================================ */
 .c-sidebar {
-    /* Por defecto (Desktop) usamos sticky */
-    position: sticky;
+    position: fixed;
     top: var(--navbar-height);
-    height: calc(100vh - var(--navbar-height));
+    left: 0;
+    /* AJUSTE: La altura respeta el navbar Y el footer */
+    height: calc(100vh - var(--navbar-height) - var(--footer-height));
     width: var(--sidebar-width);
-    flex-shrink: 0; /* No encoger en flex */
+    flex-shrink: 0;
     
     background: var(--surface-primary);
     border-right: 1px solid var(--border-color);
     z-index: 1020;
     overflow-y: auto;
     
-    /* Transición de margen para colapsar */
-    transition: margin-left var(--transition-base), transform var(--transition-base);
+    transition: transform var(--transition-base), top var(--transition-base), height var(--transition-base);
 }
 
 .c-sidebar.has-alert {
     top: calc(var(--navbar-height) + var(--alert-height));
-    height: calc(100vh - var(--navbar-height) - var(--alert-height));
+    height: calc(100vh - var(--navbar-height) - var(--alert-height) - var(--footer-height));
 }
 
-/* Colapsado en Desktop: Margen negativo */
 .c-sidebar.toggled {
-    margin-left: calc(-1 * var(--sidebar-width));
+    transform: translateX(-100%);
+    margin-left: 0;
 }
 
 .c-sidebar__search {
@@ -379,15 +380,16 @@ body {
 
 
 /* ============================================
-   COMPONENTE: MAIN CONTENT (MODIFICADO)
+   COMPONENTE: MAIN CONTENT (AJUSTADO)
    ============================================ */
 .c-main {
-    /* Eliminamos margin-left porque usamos flex */
-    margin-left: 0;
+    margin-left: var(--sidebar-width);
     padding-top: var(--navbar-height);
+    /* AJUSTE: Padding inferior para que el footer no tape el contenido */
+    padding-bottom: calc(var(--footer-height) + 20px); 
     min-height: 100vh;
-    width: 100%; /* Toma todo el espacio restante */
-    transition: margin-left var(--transition-base);
+    width: auto;
+    transition: margin-left var(--transition-base), padding-top var(--transition-base);
 }
 
 .c-main.has-alert {
@@ -404,12 +406,36 @@ body {
 
 .c-main__content {
     padding: var(--spacing-xl);
-    padding-bottom: calc(var(--spacing-xl) + 60px);
 }
 
 .c-main__content.no-padding {
     padding: 0;
-    padding-bottom: 60px;
+}
+
+
+/* ============================================
+   COMPONENTE: FOOTER (FIXED)
+   ============================================ */
+.c-footer {
+    background: var(--surface-primary);
+    border-top: 1px solid var(--border-color);
+    color: var(--text-muted);
+    font-size: 0.9rem;
+    
+    /* AJUSTE: Fixed, abajo y ocupando todo el ancho */
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: var(--footer-height);
+    
+    /* Flex para centrar contenido verticalmente */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    
+    /* Z-index alto para estar sobre el contenido, pero bajo dropdowns si es necesario */
+    z-index: 1025; 
 }
 
 
@@ -1194,26 +1220,11 @@ body {
 
 
 /* ============================================
-   COMPONENTE: FOOTER (MODIFICADO)
-   ============================================ */
-.c-footer {
-    background: var(--surface-primary);
-    border-top: 1px solid var(--border-color);
-    padding: var(--spacing-md) 0;
-    text-align: center;
-    color: var(--text-muted);
-    font-size: 0.95rem;
-    position: relative;
-    z-index: auto; /* Z-Index normal para que fluya bajo el contenido */
-}
-
-
-/* ============================================
    COMPONENTE: BACK TO TOP
    ============================================ */
 #btnBackToTop {
     position: fixed;
-    bottom: 25px;
+    bottom: 80px; /* AJUSTADO PARA NO TAPAR EL FOOTER */
     right: 25px;
     z-index: 2000;
     width: 50px;
@@ -1225,10 +1236,7 @@ body {
     background: var(--color-primary);
     color: var(--text-inverse);
     
-    /* CAMBIO: Borde blanco sutil para separar del fondo oscuro */
     border: 2px solid rgba(255, 255, 255, 0.15);
-    
-    /* CAMBIO: Sombra más profunda para dar relieve */
     box-shadow: 0 6px 16px rgba(0, 0, 0, 0.3);
     
     border-radius: 50%;
@@ -1239,7 +1247,6 @@ body {
 #btnBackToTop:hover {
     background: var(--color-accent);
     transform: translateY(-3px);
-    /* Al hacer hover, la sombra e intensidad aumentan */
     box-shadow: 0 8px 20px rgba(45, 156, 219, 0.4);
     border-color: rgba(255, 255, 255, 0.4);
 }
@@ -1671,30 +1678,25 @@ body {
         position: fixed;
         left: 0;
         bottom: 0;
+        /* En móvil ocupa todo el alto menos el nav, tapa el footer si es necesario (overlay) */
+        height: calc(100vh - var(--navbar-height));
         transform: translateX(calc(-1 * var(--sidebar-width)));
         box-shadow: var(--shadow-xl);
     }
     
     .c-sidebar.toggled {
         transform: translateX(0);
-        margin-left: 0; /* Reset del margen negativo de desktop */
+        margin-left: 0; 
     }
     
     .c-main {
         margin-left: 0;
         width: 100%;
     }
-    
-    .c-hero__title {
-        font-size: 2.5rem;
-    }
-    
-    .c-section-title {
-        font-size: 1.85rem;
-    }
-    
-    .c-cta-title {
-        font-size: 1.65rem;
+
+    /* Ajustamos el botón flotante en móvil */
+    #btnBackToTop {
+        bottom: 70px;
     }
 }
 
@@ -1703,45 +1705,10 @@ body {
         --sidebar-width: 280px;
     }
     
-    .c-hero__title {
-        font-size: 2rem;
-    }
-    
-    .c-hero__subtitle {
-        font-size: 1rem;
-    }
-    
-    .c-hero__content {
-        padding: var(--spacing-xl) var(--spacing-md);
-    }
-    
-    .c-main__content {
-        padding: var(--spacing-md);
-    }
-    
-    .c-value-props__item {
-        font-size: 0.75rem;
-        padding: var(--spacing-xs);
-    }
-    
-    .c-value-props__item i {
-        font-size: 1rem;
-    }
-    
-    .c-about-stats {
-        gap: var(--spacing-md);
-    }
-    
-    .c-about-stats__item {
-        padding: var(--spacing-lg);
-    }
-    
-    .c-about-stats__value {
-        font-size: 2rem;
-    }
-    
-    .c-cta-contact {
-        flex-direction: column;
-        gap: var(--spacing-md);
+    /* El footer en móvil puede ser más alto si el texto se rompe */
+    .c-footer {
+        height: auto;
+        min-height: var(--footer-height);
+        padding: 10px;
     }
 }
