@@ -11,30 +11,45 @@
 
 <body class="d-flex flex-column min-vh-100">
 
-    <nav class="navbar navbar-expand-lg fixed-top c-navbar">
+    <nav class="navbar fixed-top c-navbar" role="navigation" aria-label="Navegación principal">
         <div class="container-fluid">
+            <!-- Toggle Sidebar (solo en páginas internas) o espaciador para mantener posición del logo -->
             {% if request.url.path != '/' and request.url.path != '/login' %}
-            <button class="btn c-navbar__toggle me-3 d-flex align-items-center justify-content-center" id="sidebarToggle">
+            <button class="btn c-navbar__toggle me-2 d-flex align-items-center justify-content-center"
+                    id="sidebarToggle"
+                    aria-label="Abrir menú lateral"
+                    title="Menú">
                 <i class="bi bi-list fs-4"></i>
             </button>
+            {% else %}
+            <!-- Espaciador invisible para mantener el logo en la misma posición -->
+            <div class="c-navbar__spacer me-2"></div>
             {% endif %}
-            
-            <a class="navbar-brand d-flex align-items-center" href="/">
-                <img src="/static/img/logo.png" alt="Agencia de Aduana Juan León">
+
+            <!-- Logo / Brand (siempre a la izquierda) -->
+            <a class="navbar-brand d-flex align-items-center" href="/" aria-label="Ir al inicio">
+                <img src="/static/img/logo.png" alt="Agencia de Aduana Juan León" class="c-navbar__logo">
             </a>
 
-            <div class="ms-auto d-flex align-items-center gap-4 me-3">
+            <!-- Menú derecho (siempre visible) -->
+            <div class="ms-auto d-flex align-items-center gap-3 c-navbar__actions">
                 {% if request.url.path != '/' and request.url.path != '/login' %}
-                
+
+                <!-- Notificaciones -->
                 <div class="dropdown">
-                    <button class="btn btn-link text-decoration-none p-0 position-relative d-flex align-items-center c-notif-btn" 
-                            type="button" id="notifDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                    <button class="btn btn-link text-decoration-none p-2 position-relative d-flex align-items-center c-notif-btn"
+                            type="button"
+                            id="notifDropdown"
+                            data-bs-toggle="dropdown"
+                            aria-expanded="false"
+                            aria-label="Ver notificaciones"
+                            title="Notificaciones">
                         <i class="bi bi-bell fs-4"></i>
-                        <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill c-notif-badge">
+                        <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill c-notif-badge" aria-label="3 notificaciones nuevas">
                             3
                         </span>
                     </button>
-                    <ul class="dropdown-menu dropdown-menu-end c-dropdown-menu" aria-labelledby="notifDropdown" style="width: 320px;">
+                    <ul class="dropdown-menu dropdown-menu-end c-dropdown-menu c-dropdown-menu--notifications" aria-labelledby="notifDropdown">
                         <li><h6 class="dropdown-header">Notificaciones</h6></li>
                         <li>
                             <a class="dropdown-item d-flex align-items-start gap-2 py-2" href="#">
@@ -42,33 +57,41 @@
                                     <i class="bi bi-exclamation-circle"></i>
                                 </div>
                                 <div>
-                                    <small class="fw-bold d-block">Despacho 2026-0045</small>
-                                    <small class="u-text-muted" style="font-size: 0.8rem;">Requiere aprobación.</small>
+                                    <span class="fw-bold d-block">Despacho 2026-0045</span>
+                                    <span class="u-text-muted" style="font-size: 0.85rem;">Requiere aprobación.</span>
                                 </div>
                             </a>
                         </li>
                     </ul>
                 </div>
 
+                <!-- Usuario -->
                 <div class="dropdown">
-                    <button class="btn btn-link p-0 border-0 text-decoration-none d-flex align-items-center" 
-                            type="button" id="userDropdown" data-bs-toggle="dropdown" aria-expanded="false">
-                        <div class="c-avatar">JP</div>
+                    <button class="btn btn-link p-0 border-0 text-decoration-none d-flex align-items-center gap-2 c-user-btn"
+                            type="button"
+                            id="userDropdown"
+                            data-bs-toggle="dropdown"
+                            aria-expanded="false"
+                            aria-label="Menú de usuario"
+                            title="Mi cuenta">
+                        <div class="c-avatar" aria-hidden="true">JP</div>
+                        <span class="c-navbar__username d-none d-md-inline">Juan Pérez</span>
+                        <i class="bi bi-chevron-down c-navbar__chevron d-none d-md-inline"></i>
                     </button>
                     <ul class="dropdown-menu dropdown-menu-end c-dropdown-menu" aria-labelledby="userDropdown">
                         <li class="px-3 py-2 text-center border-bottom">
-                            <div class="fw-bold">Juan Pérez</div>
-                            <div class="small u-text-muted">Jefe de Operaciones</div>
+                            <div class="fw-bold" style="font-size: 1rem;">Juan Pérez</div>
+                            <div class="u-text-muted" style="font-size: 0.9rem;">Jefe de Operaciones</div>
                         </li>
                         <li><a class="dropdown-item py-2" href="#"><i class="bi bi-person me-2 u-text-muted"></i> Mi Perfil</a></li>
+                        <li><hr class="dropdown-divider"></li>
                         <li><a class="dropdown-item py-2 u-text-danger" href="/"><i class="bi bi-box-arrow-right me-2"></i> Cerrar Sesión</a></li>
                     </ul>
                 </div>
 
                 {% else %}
-                    {% if request.url.path == '/' %}
-                    <a href="/login" class="btn c-btn c-btn--accent c-btn--pill">Acceso Clientes</a>
-                    {% endif %}
+                <!-- Botón acceso clientes en home/login -->
+                <a href="/login" class="btn c-btn c-btn--accent c-btn--pill">Acceso Clientes</a>
                 {% endif %}
             </div>
         </div>

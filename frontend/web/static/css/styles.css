@@ -94,6 +94,10 @@
 /* ============================================
    RESET Y BASE
    ============================================ */
+html {
+    overflow-x: hidden;
+}
+
 body {
     font-family: var(--font-family);
     font-size: var(--font-size-base);
@@ -103,6 +107,8 @@ body {
     line-height: var(--line-height-base);
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
+    width: 100%;
+    max-width: 100vw;
 }
 
 
@@ -114,36 +120,98 @@ body {
     height: var(--navbar-height);
     z-index: 1040;
     border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    display: flex;
+    align-items: center;
+}
+
+.c-navbar .container-fluid {
+    display: flex;
+    align-items: center;
+    padding-left: var(--spacing-lg);
+    padding-right: var(--spacing-xl);
+    max-width: 1600px;
+    margin: 0 auto;
+    height: 100%;
 }
 
 .c-navbar .navbar-brand {
     padding: 0;
+    display: flex;
+    align-items: center;
 }
 
-.c-navbar .navbar-brand img {
-    height: 62.5px;
+.c-navbar .navbar-brand:hover .c-navbar__logo {
+    opacity: 0.9;
+}
+
+/* Botón toggle sidebar - sin borde */
+.c-navbar__toggle {
+    width: 40px;
+    height: 40px;
+    border: none;
+    background: transparent;
+    border-radius: var(--border-radius);
+    color: var(--text-inverse);
+    transition: var(--transition-fast);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.c-navbar__toggle:hover,
+.c-navbar__toggle:focus {
+    background: rgba(255, 255, 255, 0.1);
+    color: var(--text-inverse);
+}
+
+/* Logo - TAMAÑO GRANDE */
+.c-navbar__logo {
+    height: 48px;
     width: auto;
     filter: brightness(4) invert(0);
     transition: var(--transition-fast);
 }
 
-.c-navbar .navbar-brand:hover img {
+/* Espaciador invisible (mismo tamaño que el botón toggle) */
+.c-navbar__spacer {
+    width: 40px;
+    height: 40px;
+    flex-shrink: 0;
+}
+
+/* Acciones del navbar (siempre visibles) */
+.c-navbar__actions {
+    padding: 0;
+    flex-wrap: nowrap;
+    display: flex;
+    align-items: center;
+    height: 100%;
+}
+
+/* Nombre de usuario en navbar */
+.c-navbar__username {
+    color: var(--text-inverse);
+    font-weight: 500;
+    font-size: 0.95rem;
     opacity: 0.9;
 }
 
-.c-navbar__toggle {
-    width: 42px;
-    height: 42px;
-    border: 1px solid rgba(255, 255, 255, 0.2);
-    border-radius: var(--border-radius);
+.c-navbar__chevron {
     color: var(--text-inverse);
+    font-size: 0.75rem;
+    opacity: 0.7;
     transition: var(--transition-fast);
 }
 
-.c-navbar__toggle:hover {
-    background: rgba(255, 255, 255, 0.1);
-    border-color: rgba(255, 255, 255, 0.3);
-    color: var(--text-inverse);
+.c-user-btn {
+    display: flex;
+    align-items: center;
+    height: 100%;
+    padding: 0 0.5rem;
+}
+
+.c-user-btn:hover .c-navbar__chevron {
+    opacity: 1;
 }
 
 .c-navbar__btn-access {
@@ -168,8 +236,14 @@ body {
    ============================================ */
 .c-notif-btn {
     color: var(--text-inverse);
-    opacity: 0.85;
+    opacity: 0.9;
     transition: var(--transition-fast);
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 40px;
+    height: 40px;
 }
 
 .c-notif-btn:hover {
@@ -177,10 +251,26 @@ body {
     opacity: 1;
 }
 
+.c-notif-btn i {
+    font-size: 1.35rem;
+}
+
+/* Badge de notificaciones - visible y en esquina */
 .c-notif-badge {
     background: var(--color-danger) !important;
-    font-size: 0.6rem !important;
+    font-size: 0.65rem !important;
+    font-weight: 700 !important;
     padding: 0.25em 0.5em !important;
+    min-width: 18px;
+    height: 18px;
+    display: flex !important;
+    align-items: center;
+    justify-content: center;
+    top: 4px !important;
+    right: 4px !important;
+    left: auto !important;
+    transform: none !important;
+    border: 2px solid var(--color-primary-dark);
 }
 
 .c-dropdown-menu {
@@ -214,12 +304,13 @@ body {
    COMPONENTE: AVATAR USUARIO
    ============================================ */
 .c-avatar {
-    width: 38px;
-    height: 38px;
+    width: 34px;
+    height: 34px;
     background: linear-gradient(135deg, var(--color-accent) 0%, var(--color-accent-dark) 100%);
     border-radius: 50%;
     display: flex;
     align-items: center;
+    flex-shrink: 0;
     justify-content: center;
     color: var(--text-inverse);
     font-weight: 700;
@@ -286,7 +377,7 @@ body {
 }
 
 .c-sidebar__search {
-    padding: var(--spacing-lg);
+    padding: var(--spacing-md) var(--spacing-lg);
     border-bottom: 1px solid var(--border-color);
 }
 
@@ -317,20 +408,20 @@ body {
 
 /* Navegación Sidebar */
 .c-sidebar__nav {
-    padding: var(--spacing-md) 0;
+    padding: var(--spacing-xs) 0;
 }
 
 .c-sidebar__header {
-    padding: var(--spacing-md) var(--spacing-lg);
-    margin-top: var(--spacing-md);
+    padding: 0.3rem var(--spacing-lg);
+    margin-top: 0.5rem;
     color: var(--text-muted);
-    font-size: 0.8rem;
+    font-size: 0.75rem;
     font-weight: 700;
     letter-spacing: 0.8px;
     text-transform: uppercase;
     display: flex;
     align-items: center;
-    gap: var(--spacing-sm);
+    gap: var(--spacing-xs);
 }
 
 .c-sidebar__header i {
@@ -340,11 +431,11 @@ body {
 .c-sidebar__link {
     display: flex;
     align-items: center;
-    padding: var(--spacing-sm) var(--spacing-lg);
+    padding: 0.35rem var(--spacing-lg);
     padding-left: calc(var(--spacing-lg) + var(--spacing-md));
     color: var(--text-secondary);
     text-decoration: none;
-    font-size: 1rem;
+    font-size: 0.95rem;
     font-weight: 500;
     transition: var(--transition-fast);
     border-left: 3px solid transparent;
@@ -1670,31 +1761,63 @@ body {
 
 
 /* ============================================
-   RESPONSIVE (MODIFICADO)
+   RESPONSIVE
    ============================================ */
 @media (max-width: 991.98px) {
-    /* En móviles, volvemos a Fixed para que se comporte como un menú overlay */
+    /* Navbar tablet - altura fija */
+    .c-navbar {
+        height: var(--navbar-height);
+    }
+
+    .c-navbar__logo {
+        height: 46px;
+    }
+
+    .c-navbar__spacer {
+        width: 38px;
+        height: 38px;
+    }
+
+    /* Ocultar nombre de usuario en tablet, solo mostrar avatar */
+    .c-navbar__username,
+    .c-navbar__chevron {
+        display: none !important;
+    }
+
+    /* Hero responsive tablet */
+    .c-hero {
+        min-height: 100vh;
+        padding-top: var(--navbar-height);
+    }
+
+    .c-hero__title {
+        font-size: 2.5rem;
+    }
+
+    .c-hero__subtitle {
+        font-size: 1rem;
+    }
+
+    /* Sidebar en tablet/móvil - overlay */
     .c-sidebar {
         position: fixed;
         left: 0;
         bottom: 0;
-        /* En móvil ocupa todo el alto menos el nav, tapa el footer si es necesario (overlay) */
         height: calc(100vh - var(--navbar-height));
         transform: translateX(calc(-1 * var(--sidebar-width)));
         box-shadow: var(--shadow-xl);
     }
-    
+
     .c-sidebar.toggled {
         transform: translateX(0);
-        margin-left: 0; 
+        margin-left: 0;
     }
-    
+
     .c-main {
         margin-left: 0;
         width: 100%;
     }
 
-    /* Ajustamos el botón flotante en móvil */
     #btnBackToTop {
         bottom: 70px;
     }
@@ -1704,11 +1827,269 @@ body {
     :root {
         --sidebar-width: 280px;
     }
-    
-    /* El footer en móvil puede ser más alto si el texto se rompe */
+
+    /* Navbar container en móvil */
+    .c-navbar .container-fluid {
+        padding-left: var(--spacing-md);
+        padding-right: var(--spacing-md);
+    }
+
+    /* Barra de alerta responsive */
+    .c-alert-bar {
+        height: auto;
+        min-height: var(--alert-height);
+        padding: 0.5rem 1rem;
+        font-size: 0.75rem;
+        text-align: center;
+    }
+
+    /* Botón acceso clientes - más grande y visible */
+    .c-navbar__actions .c-btn--pill {
+        padding: 0.5rem 1rem;
+        font-size: 0.85rem;
+        white-space: nowrap;
+    }
+
+    .c-navbar__logo {
+        height: 42px;
+    }
+
+    .c-navbar__toggle,
+    .c-navbar__spacer {
+        width: 36px;
+        height: 36px;
+    }
+
+    .c-navbar__toggle i {
+        font-size: 1.2rem;
+    }
+
+    /* Reducir gap entre elementos */
+    .c-navbar__actions {
+        gap: 0.5rem;
+    }
+
+    /* Hero responsive móvil */
+    .c-hero {
+        min-height: 100vh;
+        padding-top: var(--navbar-height);
+    }
+
+    .c-hero__content {
+        padding: var(--spacing-lg);
+    }
+
+    .c-hero__title {
+        font-size: 2rem;
+    }
+
+    .c-hero__subtitle {
+        font-size: 0.95rem;
+        margin-bottom: var(--spacing-lg);
+    }
+
+    .c-hero__actions {
+        flex-direction: column;
+        gap: var(--spacing-sm);
+    }
+
+    .c-hero__actions .c-btn {
+        width: 100%;
+        justify-content: center;
+    }
+
+    /* Avatar más pequeño en móvil */
+    .c-avatar {
+        width: 32px;
+        height: 32px;
+        font-size: 0.8rem;
+    }
+
     .c-footer {
         height: auto;
         min-height: var(--footer-height);
         padding: 10px;
+    }
+
+    /* Landing: evitar franja blanca */
+    .c-hero {
+        width: 100vw;
+        margin-left: calc(-50vw + 50%);
+    }
+}
+
+/* Móviles muy pequeños */
+@media (max-width: 480px) {
+    .c-navbar__logo {
+        height: 38px;
+    }
+
+    .c-navbar__toggle,
+    .c-navbar__spacer {
+        width: 32px;
+        height: 32px;
+    }
+
+    .c-navbar__actions {
+        gap: 0.35rem;
+    }
+
+    .c-avatar {
+        width: 28px;
+        height: 28px;
+        font-size: 0.75rem;
+    }
+
+    /* Icono de notificación */
+    .c-notif-btn {
+        width: 34px;
+        height: 34px;
+    }
+
+    .c-notif-btn i {
+        font-size: 1.15rem;
+    }
+
+    /* Botón acceso clientes */
+    .c-navbar__actions .c-btn--pill {
+        padding: 0.4rem 0.8rem;
+        font-size: 0.8rem;
+    }
+
+    /* Hero móvil pequeño */
+    .c-hero__title {
+        font-size: 1.75rem;
+    }
+
+    .c-hero__badge {
+        font-size: 0.65rem;
+        padding: 0.4rem 1rem;
+    }
+}
+
+/* ============================================
+   RESPONSIVE POR ALTURA - SIDEBAR COMPACTO
+   ============================================ */
+
+/* Pantallas con altura pequeña (laptops 768p, tablets landscape) */
+@media (max-height: 750px) {
+    .c-sidebar__search {
+        padding: var(--spacing-xs) var(--spacing-sm);
+    }
+
+    .c-sidebar__header {
+        padding: 0.15rem var(--spacing-lg);
+        margin-top: var(--spacing-xs);
+        font-size: 0.7rem;
+    }
+
+    .c-sidebar__link {
+        padding: 0.25rem var(--spacing-lg);
+        padding-left: calc(var(--spacing-lg) + var(--spacing-md));
+        font-size: 0.9rem;
+    }
+}
+
+/* Pantallas muy pequeñas en altura */
+@media (max-height: 650px) {
+    .c-sidebar__search {
+        padding: 0.2rem var(--spacing-xs);
+    }
+
+    .c-sidebar__header {
+        padding: 0.1rem var(--spacing-md);
+        margin-top: 0.1rem;
+        font-size: 0.65rem;
+    }
+
+    .c-sidebar__link {
+        padding: 0.15rem var(--spacing-md);
+        padding-left: calc(var(--spacing-md) + var(--spacing-sm));
+        font-size: 0.85rem;
+    }
+
+    .c-sidebar__link i {
+        width: 16px;
+        font-size: 0.85rem;
+        margin-right: var(--spacing-xs);
+    }
+}
+
+/* ============================================
+   ACCESIBILIDAD - MEJORAS PARA USUARIOS MAYORES
+   ============================================ */
+
+/* Focus visible mejorado para navegación con teclado */
+*:focus-visible {
+    outline: 3px solid var(--color-accent);
+    outline-offset: 2px;
+}
+
+/* Botones y enlaces más fáciles de clickear */
+.c-navbar__toggle,
+.c-navbar__mobile-toggle,
+.c-notif-btn,
+.c-user-btn,
+.c-sidebar__link,
+.dropdown-item,
+.btn {
+    min-height: 44px;
+    min-width: 44px;
+}
+
+/* Avatar más visible */
+.c-avatar {
+    width: 40px;
+    height: 40px;
+    font-size: 1rem;
+    font-weight: 600;
+}
+
+/* Mejorar contraste y legibilidad en dropdowns */
+.c-dropdown-menu {
+    font-size: 0.95rem;
+}
+
+.c-dropdown-menu .dropdown-item {
+    padding: 0.65rem 1rem;
+    min-height: 44px;
+    display: flex;
+    align-items: center;
+}
+
+.c-dropdown-menu .dropdown-header {
+    font-size: 0.85rem;
+}
+
+/* Notificaciones más legibles */
+.c-dropdown-menu--notifications {
+    width: 340px;
+    max-width: 95vw;
+}
+
+/* Transiciones suaves pero no demasiado lentas */
+@media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+    }
+}
+
+/* Alto contraste si el usuario lo prefiere */
+@media (prefers-contrast: high) {
+    .c-navbar {
+        border-bottom: 2px solid rgba(255, 255, 255, 0.3);
+    }
+
+    .c-sidebar__link:hover,
+    .c-sidebar__link.active {
+        border-left-width: 4px;
+    }
+
+    .c-dropdown-menu {
+        border: 2px solid var(--border-color);
     }
 }
