@@ -5,7 +5,7 @@
 TIMESTAMP=$(date -u +"%Y-%m-%dT%H:%M:%SZ")
 START_TIME=$(date +%s)
 
-echo "[$TIMESTAMP] Iniciando proceso de migración..."
+echo "[$TIMESTAMP] Iniciando proceso de migración (MODO ROBUSTO - 4GB RAM)..."
 
 # 1. Preparar archivo de configuración (Reemplazo de variables)
 # Se usa 'sed' para inyectar las variables de entorno en la plantilla
@@ -17,8 +17,9 @@ if ! sed -e 's|__MSSQL_BASE_URL__|'"$MSSQL_BASE_URL"'|g' \
 fi
 
 # 2. Ejecutar Pgloader y capturar salida
-# Redirigimos stderr a stdout (2>&1) para capturar todo el log en la variable
-OUTPUT=$(pgloader --verbose /migration.load 2>&1)
+# CAMBIO CRÍTICO: --dynamic-space-size 4096 asigna 4GB de RAM al heap de Lisp.
+# Esto evita el error "LPARALLEL" y "Heap exhaustion".
+OUTPUT=$(pgloader --verbose --dynamic-space-size 4096 /migration.load 2>&1)
 EXIT_CODE=$?
 END_TIME=$(date +%s)
 DURATION=$((END_TIME - START_TIME))
@@ -34,7 +35,7 @@ else
     echo "[$TIMESTAMP] ERROR: $MESSAGE"
     # Imprimir las últimas líneas del log para depuración inmediata en consola
     echo "--- ÚLTIMAS LÍNEAS DEL LOG ---"
-    echo "$OUTPUT" | tail -n 20
+    echo "$OUTPUT" | tail -n 40
     echo "------------------------------"
 fi
 

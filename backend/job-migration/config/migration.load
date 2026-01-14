@@ -1,5 +1,5 @@
 /* ========================================================================== */
-/* ARCHIVO MAESTRO DE MIGRACIÓN - PLANTILLA CON VARIABLES DE ENTORNO          */
+/* ARCHIVO MAESTRO DE MIGRACIÓN - MODO ROBUSTO (BAJA CONCURRENCIA)            */
 /* ========================================================================== */
 
 /* -------------------------------------------------------------------------- */
@@ -15,15 +15,15 @@ WITH
     create indexes,
     reset sequences,
     foreign keys,
-    workers = 2,
+    workers = 1,          /* Reducido de 2 a 1 para estabilidad */
     concurrency = 1,
-    batch rows = 500,
-    prefetch rows = 500
+    batch rows = 100,     /* Reducido de 500 a 100 para evitar timeouts de red */
+    prefetch rows = 100   /* Reducido de 500 a 100 para ahorrar memoria */
 
 SET PostgreSQL PARAMETERS
     statement_timeout = '0',
     lock_timeout = '0',
-    work_mem = '128MB',
+    work_mem = '64MB',    /* Reducido ligeramente para ser conservador */
     maintenance_work_mem = '256MB',
     standard_conforming_strings = 'on'
 
@@ -65,15 +65,15 @@ WITH
     create indexes,
     reset sequences,
     foreign keys,
-    workers = 2,
+    workers = 1,
     concurrency = 1,
-    batch rows = 500,
-    prefetch rows = 500
+    batch rows = 100,
+    prefetch rows = 100
 
 SET PostgreSQL PARAMETERS
     statement_timeout = '0',
     lock_timeout = '0',
-    work_mem = '128MB',
+    work_mem = '64MB',
     maintenance_work_mem = '256MB',
     standard_conforming_strings = 'on'
 
@@ -115,15 +115,15 @@ WITH
     create indexes,
     reset sequences,
     foreign keys,
-    workers = 2,
+    workers = 1,
     concurrency = 1,
-    batch rows = 500,
-    prefetch rows = 500
+    batch rows = 100,
+    prefetch rows = 100
 
 SET PostgreSQL PARAMETERS
     statement_timeout = '0',
     lock_timeout = '0',
-    work_mem = '128MB',
+    work_mem = '64MB',
     maintenance_work_mem = '256MB',
     standard_conforming_strings = 'on'
 
@@ -153,7 +153,7 @@ CAST
     type text to text drop typemod using (lambda (s) (if s (remove (code-char 0) s) nil));
 
 /* -------------------------------------------------------------------------- */
-/* BLOQUE 4: SISCON - CON CORRECCIÓN AUTOMÁTICA DE ENVIOSMAIL                */
+/* BLOQUE 4: SISCON                                                           */
 /* -------------------------------------------------------------------------- */
 LOAD DATABASE
     FROM __MSSQL_BASE_URL__/siscon
@@ -165,15 +165,15 @@ WITH
     create indexes,
     reset sequences,
     -- foreign keys,  /* Deshabilitado - se crean en AFTER LOAD DO */
-    workers = 2,
+    workers = 1,
     concurrency = 1,
-    batch rows = 500,
-    prefetch rows = 500
+    batch rows = 100,
+    prefetch rows = 100
 
 SET PostgreSQL PARAMETERS
     statement_timeout = '0',
     lock_timeout = '0',
-    work_mem = '128MB',
+    work_mem = '64MB',
     maintenance_work_mem = '256MB',
     standard_conforming_strings = 'on'
 
@@ -186,7 +186,7 @@ CAST
     type numeric drop default drop not null,
     type decimal drop default drop not null,
     type money to numeric drop default drop not null,
-    type smallmoney to numeric drop default drop not null, /* CORREGIDO: faltaba drop antes de default */
+    type smallmoney to numeric drop default drop not null,
     type int drop default drop not null,
     type smallint drop default drop not null,
     type bigint drop default drop not null,
@@ -274,15 +274,15 @@ WITH
     create indexes,
     reset sequences,
     foreign keys,
-    workers = 2,
+    workers = 1,
     concurrency = 1,
-    batch rows = 500,
-    prefetch rows = 500
+    batch rows = 100,
+    prefetch rows = 100
 
 SET PostgreSQL PARAMETERS
     statement_timeout = '0',
     lock_timeout = '0',
-    work_mem = '128MB',
+    work_mem = '64MB',
     maintenance_work_mem = '256MB',
     standard_conforming_strings = 'on'
 
@@ -293,7 +293,7 @@ EXCLUDING TABLE NAMES LIKE 'dtproperties' IN SCHEMA 'dbo'
 CAST
     type tinyint to smallint drop default drop not null,
     type numeric drop default drop not null,
-    type decimal drop default drop not null, /* CORREGIDO: faltaba drop antes de default */
+    type decimal drop default drop not null,
     type money to numeric drop default drop not null,
     type smallmoney to numeric drop default drop not null,
     type int drop default drop not null,
@@ -312,7 +312,7 @@ CAST
     type text to text drop typemod using (lambda (s) (if s (remove (code-char 0) s) nil));
 
 /* -------------------------------------------------------------------------- */
-/* BLOQUE 6: DECLARACION (INTENTO FINAL - AGREGADO NTEXT)                     */
+/* BLOQUE 6: DECLARACION                                                      */
 /* -------------------------------------------------------------------------- */
 LOAD DATABASE
     FROM __MSSQL_BASE_URL__/declaracion
@@ -324,15 +324,15 @@ WITH
     create indexes,
     reset sequences,
     foreign keys,
-    workers = 2,
+    workers = 1,
     concurrency = 1,
-    batch rows = 500,
-    prefetch rows = 500
+    batch rows = 100,
+    prefetch rows = 100
 
 SET PostgreSQL PARAMETERS
     statement_timeout = '0',
     lock_timeout = '0',
-    work_mem = '128MB',
+    work_mem = '64MB',
     maintenance_work_mem = '256MB',
     standard_conforming_strings = 'on'
 
