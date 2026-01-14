@@ -13,7 +13,6 @@
 
     <nav class="navbar fixed-top c-navbar" role="navigation" aria-label="Navegación principal">
         <div class="container-fluid">
-            <!-- Toggle Sidebar (solo en páginas internas) o espaciador para mantener posición del logo -->
             {% if request.url.path != '/' and request.url.path != '/login' %}
             <button class="btn c-navbar__toggle me-2 d-flex align-items-center justify-content-center"
                     id="sidebarToggle"
@@ -22,20 +21,16 @@
                 <i class="bi bi-list fs-4"></i>
             </button>
             {% else %}
-            <!-- Espaciador invisible para mantener el logo en la misma posición -->
             <div class="c-navbar__spacer me-2"></div>
             {% endif %}
 
-            <!-- Logo / Brand (siempre a la izquierda) -->
             <a class="navbar-brand d-flex align-items-center" href="/" aria-label="Ir al inicio">
                 <img src="/static/img/logo.png" alt="Agencia de Aduana Juan León" class="c-navbar__logo">
             </a>
 
-            <!-- Menú derecho (siempre visible) -->
             <div class="ms-auto d-flex align-items-center gap-3 c-navbar__actions">
                 {% if request.url.path != '/' and request.url.path != '/login' %}
 
-                <!-- Notificaciones -->
                 <div class="dropdown">
                     <button class="btn btn-link text-decoration-none p-2 position-relative d-flex align-items-center c-notif-btn"
                             type="button"
@@ -65,7 +60,6 @@
                     </ul>
                 </div>
 
-                <!-- Usuario -->
                 <div class="dropdown">
                     <button class="btn btn-link p-0 border-0 text-decoration-none d-flex align-items-center gap-2 c-user-btn"
                             type="button"
@@ -90,8 +84,10 @@
                 </div>
 
                 {% else %}
-                <!-- Botón acceso clientes en home/login -->
-                <a href="/login" class="btn c-btn c-btn--accent c-btn--pill">Acceso Clientes</a>
+                <a href="/login" class="btn c-btn c-btn--accent c-btn--pill">
+                    <span class="d-inline d-sm-none">Ingresar</span>
+                    <span class="d-none d-sm-inline">Acceso Clientes</span>
+                </a>
                 {% endif %}
             </div>
         </div>
