@@ -94,6 +94,10 @@
 /* ============================================
    RESET Y BASE
    ============================================ */
+html {
+    overflow-x: hidden;
+}
+
 body {
     font-family: var(--font-family);
     font-size: var(--font-size-base);
@@ -103,6 +107,8 @@ body {
     line-height: var(--line-height-base);
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
+    width: 100%;
+    max-width: 100vw;
 }
 
 
@@ -114,17 +120,24 @@ body {
     height: var(--navbar-height);
     z-index: 1040;
     border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    display: flex;
+    align-items: center;
 }
 
 .c-navbar .container-fluid {
+    display: flex;
+    align-items: center;
     padding-left: var(--spacing-lg);
     padding-right: var(--spacing-xl);
     max-width: 1600px;
     margin: 0 auto;
+    height: 100%;
 }
 
 .c-navbar .navbar-brand {
     padding: 0;
+    display: flex;
+    align-items: center;
 }
 
 .c-navbar .navbar-brand:hover .c-navbar__logo {
@@ -140,6 +153,9 @@ body {
     border-radius: var(--border-radius);
     color: var(--text-inverse);
     transition: var(--transition-fast);
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
 .c-navbar__toggle:hover,
@@ -148,9 +164,9 @@ body {
     color: var(--text-inverse);
 }
 
-/* Logo */
+/* Logo - TAMAÑO GRANDE */
 .c-navbar__logo {
-    height: 40px;
+    height: 48px;
     width: auto;
     filter: brightness(4) invert(0);
     transition: var(--transition-fast);
@@ -167,7 +183,9 @@ body {
 .c-navbar__actions {
     padding: 0;
     flex-wrap: nowrap;
+    display: flex;
     align-items: center;
+    height: 100%;
 }
 
 /* Nombre de usuario en navbar */
@@ -183,6 +201,13 @@ body {
     font-size: 0.75rem;
     opacity: 0.7;
     transition: var(--transition-fast);
+}
+
+.c-user-btn {
+    display: flex;
+    align-items: center;
+    height: 100%;
+    padding: 0 0.5rem;
 }
 
 .c-user-btn:hover .c-navbar__chevron {
@@ -211,9 +236,14 @@ body {
    ============================================ */
 .c-notif-btn {
     color: var(--text-inverse);
-    opacity: 0.85;
+    opacity: 0.9;
     transition: var(--transition-fast);
     position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 40px;
+    height: 40px;
 }
 
 .c-notif-btn:hover {
@@ -222,18 +252,25 @@ body {
 }
 
 .c-notif-btn i {
-    font-size: 1.25rem;
+    font-size: 1.35rem;
 }
 
-/* Badge de notificaciones - posición ajustada */
+/* Badge de notificaciones - visible y en esquina */
 .c-notif-badge {
     background: var(--color-danger) !important;
-    font-size: 0.55rem !important;
-    padding: 0.2em 0.45em !important;
-    top: 2px !important;
-    right: 2px !important;
+    font-size: 0.65rem !important;
+    font-weight: 700 !important;
+    padding: 0.25em 0.5em !important;
+    min-width: 18px;
+    height: 18px;
+    display: flex !important;
+    align-items: center;
+    justify-content: center;
+    top: 4px !important;
+    right: 4px !important;
     left: auto !important;
     transform: none !important;
+    border: 2px solid var(--color-primary-dark);
 }
 
 .c-dropdown-menu {
@@ -1733,7 +1770,7 @@ body {
     }
 
     .c-navbar__logo {
-        height: 44px;
+        height: 46px;
     }
 
     .c-navbar__spacer {
@@ -1745,6 +1782,20 @@ body {
     .c-navbar__username,
     .c-navbar__chevron {
         display: none !important;
+    }
+
+    /* Hero responsive tablet */
+    .c-hero {
+        min-height: 100vh;
+        padding-top: var(--navbar-height);
+    }
+
+    .c-hero__title {
+        font-size: 2.5rem;
+    }
+
+    .c-hero__subtitle {
+        font-size: 1rem;
     }
 
     /* Sidebar en tablet/móvil - overlay */
@@ -1779,8 +1830,8 @@ body {
 
     /* Navbar container en móvil */
     .c-navbar .container-fluid {
-        padding-left: var(--spacing-sm);
-        padding-right: var(--spacing-sm);
+        padding-left: var(--spacing-md);
+        padding-right: var(--spacing-md);
     }
 
     /* Barra de alerta responsive */
@@ -1792,15 +1843,15 @@ body {
         text-align: center;
     }
 
-    /* Botón acceso clientes en móvil */
+    /* Botón acceso clientes - más grande y visible */
     .c-navbar__actions .c-btn--pill {
-        padding: 0.4rem 0.9rem;
-        font-size: 0.8rem;
+        padding: 0.5rem 1rem;
+        font-size: 0.85rem;
         white-space: nowrap;
     }
 
     .c-navbar__logo {
-        height: 36px;
+        height: 42px;
     }
 
     .c-navbar__toggle,
@@ -1818,11 +1869,40 @@ body {
         gap: 0.5rem;
     }
 
+    /* Hero responsive móvil */
+    .c-hero {
+        min-height: 100vh;
+        padding-top: var(--navbar-height);
+    }
+
+    .c-hero__content {
+        padding: var(--spacing-lg);
+    }
+
+    .c-hero__title {
+        font-size: 2rem;
+    }
+
+    .c-hero__subtitle {
+        font-size: 0.95rem;
+        margin-bottom: var(--spacing-lg);
+    }
+
+    .c-hero__actions {
+        flex-direction: column;
+        gap: var(--spacing-sm);
+    }
+
+    .c-hero__actions .c-btn {
+        width: 100%;
+        justify-content: center;
+    }
+
     /* Avatar más pequeño en móvil */
     .c-avatar {
-        width: 34px;
-        height: 34px;
-        font-size: 0.85rem;
+        width: 32px;
+        height: 32px;
+        font-size: 0.8rem;
     }
 
     .c-footer {
@@ -1830,12 +1910,18 @@ body {
         min-height: var(--footer-height);
         padding: 10px;
     }
+
+    /* Landing: evitar franja blanca */
+    .c-hero {
+        width: 100vw;
+        margin-left: calc(-50vw + 50%);
+    }
 }
 
 /* Móviles muy pequeños */
 @media (max-width: 480px) {
     .c-navbar__logo {
-        height: 32px;
+        height: 38px;
     }
 
     .c-navbar__toggle,
@@ -1845,23 +1931,39 @@ body {
     }
 
     .c-navbar__actions {
-        gap: 0.25rem;
+        gap: 0.35rem;
     }
 
     .c-avatar {
-        width: 30px;
-        height: 30px;
+        width: 28px;
+        height: 28px;
+        font-size: 0.75rem;
+    }
+
+    /* Icono de notificación */
+    .c-notif-btn {
+        width: 34px;
+        height: 34px;
+    }
+
+    .c-notif-btn i {
+        font-size: 1.15rem;
+    }
+
+    /* Botón acceso clientes */
+    .c-navbar__actions .c-btn--pill {
+        padding: 0.4rem 0.8rem;
         font-size: 0.8rem;
     }
 
-    /* Icono de notificación más pequeño */
-    .c-notif-btn i {
-        font-size: 1.1rem;
+    /* Hero móvil pequeño */
+    .c-hero__title {
+        font-size: 1.75rem;
     }
 
-    .c-btn--pill {
-        padding: 0.35rem 0.75rem;
-        font-size: 0.85rem;
+    .c-hero__badge {
+        font-size: 0.65rem;
+        padding: 0.4rem 1rem;
     }
 }
 
