@@ -11,7 +11,7 @@ services:
     networks:
       - backend
     extra_hosts:
-      - "ares.jleon.lan:172.16.0.240"
+      - "homero.ajleon.cl:201.236.154.122"
     environment:
       - TDS_MAX_CONN=1024
       - ADMIN_TOKEN=${ADMIN_TOKEN}
