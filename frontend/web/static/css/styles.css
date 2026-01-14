@@ -116,6 +116,13 @@ body {
     border-bottom: 1px solid rgba(255, 255, 255, 0.1);
 }
 
+.c-navbar .container-fluid {
+    padding-left: var(--spacing-lg);
+    padding-right: var(--spacing-xl);
+    max-width: 1600px;
+    margin: 0 auto;
+}
+
 .c-navbar .navbar-brand {
     padding: 0;
 }
@@ -124,24 +131,26 @@ body {
     opacity: 0.9;
 }
 
+/* Botón toggle sidebar - sin borde */
 .c-navbar__toggle {
-    width: 42px;
-    height: 42px;
-    border: 1px solid rgba(255, 255, 255, 0.2);
+    width: 40px;
+    height: 40px;
+    border: none;
+    background: transparent;
     border-radius: var(--border-radius);
     color: var(--text-inverse);
     transition: var(--transition-fast);
 }
 
-.c-navbar__toggle:hover {
+.c-navbar__toggle:hover,
+.c-navbar__toggle:focus {
     background: rgba(255, 255, 255, 0.1);
-    border-color: rgba(255, 255, 255, 0.3);
     color: var(--text-inverse);
 }
 
-/* Logo responsive */
+/* Logo */
 .c-navbar__logo {
-    height: 50px;
+    height: 40px;
     width: auto;
     filter: brightness(4) invert(0);
     transition: var(--transition-fast);
@@ -149,8 +158,8 @@ body {
 
 /* Espaciador invisible (mismo tamaño que el botón toggle) */
 .c-navbar__spacer {
-    width: 42px;
-    height: 42px;
+    width: 40px;
+    height: 40px;
     flex-shrink: 0;
 }
 
@@ -158,6 +167,7 @@ body {
 .c-navbar__actions {
     padding: 0;
     flex-wrap: nowrap;
+    align-items: center;
 }
 
 /* Nombre de usuario en navbar */
@@ -203,6 +213,7 @@ body {
     color: var(--text-inverse);
     opacity: 0.85;
     transition: var(--transition-fast);
+    position: relative;
 }
 
 .c-notif-btn:hover {
@@ -210,10 +221,19 @@ body {
     opacity: 1;
 }
 
+.c-notif-btn i {
+    font-size: 1.25rem;
+}
+
+/* Badge de notificaciones - posición ajustada */
 .c-notif-badge {
     background: var(--color-danger) !important;
-    font-size: 0.6rem !important;
-    padding: 0.25em 0.5em !important;
+    font-size: 0.55rem !important;
+    padding: 0.2em 0.45em !important;
+    top: 2px !important;
+    right: 2px !important;
+    left: auto !important;
+    transform: none !important;
 }
 
 .c-dropdown-menu {
@@ -247,12 +267,13 @@ body {
    COMPONENTE: AVATAR USUARIO
    ============================================ */
 .c-avatar {
-    width: 38px;
-    height: 38px;
+    width: 34px;
+    height: 34px;
     background: linear-gradient(135deg, var(--color-accent) 0%, var(--color-accent-dark) 100%);
     border-radius: 50%;
     display: flex;
     align-items: center;
+    flex-shrink: 0;
     justify-content: center;
     color: var(--text-inverse);
     font-weight: 700;
@@ -1756,6 +1777,12 @@ body {
         --sidebar-width: 280px;
     }
 
+    /* Navbar container en móvil */
+    .c-navbar .container-fluid {
+        padding-left: var(--spacing-sm);
+        padding-right: var(--spacing-sm);
+    }
+
     /* Barra de alerta responsive */
     .c-alert-bar {
         height: auto;
@@ -1765,8 +1792,15 @@ body {
         text-align: center;
     }
 
+    /* Botón acceso clientes en móvil */
+    .c-navbar__actions .c-btn--pill {
+        padding: 0.4rem 0.9rem;
+        font-size: 0.8rem;
+        white-space: nowrap;
+    }
+
     .c-navbar__logo {
-        height: 38px;
+        height: 36px;
     }
 
     .c-navbar__toggle,
