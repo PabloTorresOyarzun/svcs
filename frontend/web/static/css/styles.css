@@ -286,7 +286,7 @@ body {
 }
 
 .c-sidebar__search {
-    padding: var(--spacing-lg);
+    padding: var(--spacing-sm) var(--spacing-md);
     border-bottom: 1px solid var(--border-color);
 }
 
@@ -317,20 +317,20 @@ body {
 
 /* Navegación Sidebar */
 .c-sidebar__nav {
-    padding: var(--spacing-md) 0;
+    padding: var(--spacing-xs) 0;
 }
 
 .c-sidebar__header {
-    padding: var(--spacing-md) var(--spacing-lg);
-    margin-top: var(--spacing-md);
+    padding: var(--spacing-xs) var(--spacing-lg);
+    margin-top: var(--spacing-sm);
     color: var(--text-muted);
-    font-size: 0.8rem;
+    font-size: 0.75rem;
     font-weight: 700;
     letter-spacing: 0.8px;
     text-transform: uppercase;
     display: flex;
     align-items: center;
-    gap: var(--spacing-sm);
+    gap: var(--spacing-xs);
 }
 
 .c-sidebar__header i {
@@ -340,7 +340,7 @@ body {
 .c-sidebar__link {
     display: flex;
     align-items: center;
-    padding: var(--spacing-sm) var(--spacing-lg);
+    padding: 0.35rem var(--spacing-lg);
     padding-left: calc(var(--spacing-lg) + var(--spacing-md));
     color: var(--text-secondary);
     text-decoration: none;
@@ -1717,41 +1717,14 @@ body {
    RESPONSIVE POR ALTURA - SIDEBAR COMPACTO
    ============================================ */
 
-/* Pantallas con altura media (laptops, monitores pequeños) */
-@media (max-height: 800px) {
-    .c-sidebar__search {
-        padding: var(--spacing-md);
-    }
-
-    .c-sidebar__nav {
-        padding: var(--spacing-sm) 0;
-    }
-
-    .c-sidebar__header {
-        padding: var(--spacing-sm) var(--spacing-lg);
-        margin-top: var(--spacing-sm);
-        font-size: 0.75rem;
-    }
-
-    .c-sidebar__link {
-        padding: 0.35rem var(--spacing-lg);
-        padding-left: calc(var(--spacing-lg) + var(--spacing-md));
-        font-size: 0.95rem;
-    }
-}
-
 /* Pantallas con altura pequeña (laptops 768p, tablets landscape) */
-@media (max-height: 700px) {
+@media (max-height: 750px) {
     .c-sidebar__search {
-        padding: var(--spacing-sm) var(--spacing-md);
-    }
-
-    .c-sidebar__nav {
-        padding: var(--spacing-xs) 0;
+        padding: var(--spacing-xs) var(--spacing-sm);
     }
 
     .c-sidebar__header {
-        padding: var(--spacing-xs) var(--spacing-lg);
+        padding: 0.15rem var(--spacing-lg);
         margin-top: var(--spacing-xs);
         font-size: 0.7rem;
     }
@@ -1761,28 +1734,22 @@ body {
         padding-left: calc(var(--spacing-lg) + var(--spacing-md));
         font-size: 0.9rem;
     }
-
-    .c-sidebar__link i {
-        width: 18px;
-        font-size: 0.9rem;
-    }
 }
 
 /* Pantallas muy pequeñas en altura */
-@media (max-height: 600px) {
+@media (max-height: 650px) {
     .c-sidebar__search {
-        padding: var(--spacing-xs) var(--spacing-sm);
+        padding: 0.2rem var(--spacing-xs);
     }
 
     .c-sidebar__header {
-        padding: 0.15rem var(--spacing-md);
-        margin-top: 0.15rem;
+        padding: 0.1rem var(--spacing-md);
+        margin-top: 0.1rem;
         font-size: 0.65rem;
-        letter-spacing: 0.5px;
     }
 
     .c-sidebar__link {
-        padding: 0.2rem var(--spacing-md);
+        padding: 0.15rem var(--spacing-md);
         padding-left: calc(var(--spacing-md) + var(--spacing-sm));
         font-size: 0.85rem;
     }
