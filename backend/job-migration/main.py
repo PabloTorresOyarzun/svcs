@@ -4,7 +4,7 @@ import time
 import logging
 import pandas as pd
 from sqlalchemy import create_engine, inspect, text
-from sqlalchemy.pool import NullPool  # <--- CRÍTICO: Desactiva el pool para evitar errores de driver
+from sqlalchemy.pool import NullPool  # Vital para limpiar la conexión MSSQL
 from urllib.parse import quote_plus
 from sqlalchemy.types import Integer, Text, String, DateTime, Boolean, Numeric, BigInteger, Float, Date, Time, LargeBinary, SmallInteger
 from sqlalchemy.dialects import mssql, postgresql
@@ -30,13 +30,13 @@ PG_HOST = os.getenv('PG_HOST')
 PG_PORT = os.getenv('PG_PORT', '5432')
 PG_DB =   os.getenv('PG_DB')
 
-# --- CONFIGURACIÓN "MODO TANQUE" ---
+# --- Configuración de Resiliencia ---
 INITIAL_CHUNK_SIZE = 10000
-MIN_CHUNK_SIZE = 100      # Bajamos el piso para pasar datos corruptos si es necesario
-MAX_RETRIES = 10          # Más intentos para tablas difíciles
-DB_MAX_RETRIES = 5        # Intentos de conexión a la base de datos
+MIN_CHUNK_SIZE = 100      # Muy bajo para aislar errores graves
+MAX_RETRIES = 10          # Insistimos mucho
+DB_MAX_RETRIES = 5        # Intentos de conexión global a la DB
 
-# Almacén global de FKs
+# Almacén global de FKs para aplicar al final
 PENDING_FKS = {}
 
 if not all([MSSQL_USER, MSSQL_PASS, MSSQL_HOST, PG_USER, PG_PASS, PG_HOST, PG_DB]):
@@ -52,8 +52,8 @@ def get_mssql_engine(db_name):
         f"PWD={MSSQL_PASS};"
         "TrustServerCertificate=yes;"
     )
-    # poolclass=NullPool: Fuerza a cerrar y abrir la conexión TCP en cada uso.
-    # Esto limpia el estado SSL del driver y evita el error 0x2746 en cargas masivas.
+    # NullPool: Crea una conexión TCP nueva para cada operación.
+    # Soluciona el error 0x2746 y limpia el estado SSL del driver.
     return create_engine(
         f"mssql+pyodbc:///?odbc_connect={params}", 
         fast_executemany=True,
@@ -61,16 +61,15 @@ def get_mssql_engine(db_name):
     )
 
 def get_pg_engine():
-    # En Postgres mantenemos el pool porque es estable y eficiente
     return create_engine(
         f"postgresql://{PG_USER}:{PG_PASS}@{PG_HOST}:{PG_PORT}/{PG_DB}",
         pool_pre_ping=True
     )
 
 def get_precise_type(mssql_type):
-    """Mapeo de tipos robusto incluyendo sysname."""
+    """Mapeo robusto de tipos."""
     try:
-        # Fix para tipo 'sysname' de SQL Server
+        # Fix para tipo 'sysname'
         if str(mssql_type).lower() == 'sysname':
             return String(128)
             
@@ -96,7 +95,7 @@ def get_precise_type(mssql_type):
     return Text()
 
 def clean_dataframe(df, dtype_mapping):
-    """Limpia datos antes de insertar."""
+    """Limpieza de datos."""
     for col_name, sql_type in dtype_mapping.items():
         if col_name not in df.columns: continue
         if isinstance(sql_type, (DateTime, Date)):
@@ -109,7 +108,7 @@ def clean_dataframe(df, dtype_mapping):
     return df
 
 def get_pk_columns_raw(mssql_engine, table_name):
-    """Consulta sys.indexes para hallar la PK real (incluso compuestas)."""
+    """Obtiene PKs reales consultando sys.indexes."""
     sql = text(f"""
         SELECT c.name
         FROM sys.indexes i
@@ -129,7 +128,7 @@ def get_pk_columns_raw(mssql_engine, table_name):
         return []
 
 def harvest_foreign_keys(mssql_engine, db_name, table_name):
-    """Guarda FKs en memoria para aplicar al final."""
+    """Guarda las FKs para crearlas al final."""
     try:
         inspector = inspect(mssql_engine)
         fks = inspector.get_foreign_keys(table_name)
@@ -157,7 +156,7 @@ def harvest_foreign_keys(mssql_engine, db_name, table_name):
                 'desc': f"{table_name}->{ref_table}"
             })
     except Exception:
-        pass 
+        pass
 
 def restore_primary_key(pg_engine, db_name, table_name, pk_columns):
     if not pk_columns:
@@ -184,8 +183,6 @@ def migrate_table_attempt(mssql_engine, pg_engine, db_name, table_name, chunk_si
     dtype_mapping = {col['name']: get_precise_type(col['type']) for col in columns_info}
 
     query = f"SELECT * FROM [{table_name}]"
-    
-    # IMPORTANTE: El chunksize aquí determina cuánta memoria usamos
     chunks = pd.read_sql_query(query, mssql_engine, chunksize=chunk_size)
     
     total_rows = 0
@@ -194,7 +191,22 @@ def migrate_table_attempt(mssql_engine, pg_engine, db_name, table_name, chunk_si
     for i, df_chunk in enumerate(chunks):
         if df_chunk.empty: continue
 
+        # --- FIX CRÍTICO: DROP CASCADE ---
+        # Rompe las FKs que impiden borrar la tabla vieja
+        if is_first_chunk:
+            try:
+                drop_sql = f'DROP TABLE IF EXISTS "{db_name}"."{table_name}" CASCADE'
+                with pg_engine.connect() as conn:
+                    conn.execute(text(drop_sql))
+                    conn.commit()
+            except Exception as e:
+                logger.warning(f"    ! Advertencia al dropear {table_name}: {e}")
+        # ---------------------------------
+
         df_chunk = clean_dataframe(df_chunk, dtype_mapping)
+        
+        # Como ya borramos manualmente arriba, usamos 'replace' para crear estructura,
+        # o 'append' para los siguientes chunks.
         mode = 'replace' if is_first_chunk else 'append'
         
         df_chunk.to_sql(
@@ -205,7 +217,6 @@ def migrate_table_attempt(mssql_engine, pg_engine, db_name, table_name, chunk_si
         total_rows += len(df_chunk)
         is_first_chunk = False
         
-        # Log menos ruidoso: cada 10 chunks
         if (i + 1) % 10 == 0:
             logger.info(f"    -> {table_name}: {total_rows} filas...")
 
@@ -217,10 +228,7 @@ def migrate_table_attempt(mssql_engine, pg_engine, db_name, table_name, chunk_si
 def migrate_table_with_retry(mssql_engine, pg_engine, db_name, table_name):
     current_chunk = INITIAL_CHUNK_SIZE
     
-    # 1. Obtener PK Real
     pk_columns = get_pk_columns_raw(mssql_engine, table_name)
-    
-    # 2. Cosechar FKs
     harvest_foreign_keys(mssql_engine, db_name, table_name)
 
     for attempt in range(1, MAX_RETRIES + 1):
@@ -243,11 +251,8 @@ def migrate_table_with_retry(mssql_engine, pg_engine, db_name, table_name):
                 logger.critical(f"    !!! SE RINDIÓ CON {table_name} DESPUÉS DE {MAX_RETRIES} INTENTOS.")
                 return
             
-            # Backoff agresivo y reducción de chunk
             wait_time = attempt * 5
             current_chunk = max(MIN_CHUNK_SIZE, int(current_chunk / 2))
-            
-            # Pausa para dejar que el driver se recupere
             time.sleep(wait_time)
 
 def apply_pending_foreign_keys(pg_engine, db_name):
@@ -265,39 +270,33 @@ def apply_pending_foreign_keys(pg_engine, db_name):
                 conn.commit()
                 success += 1
             except Exception:
-                pass # Ignorar fallos de FK (normal en migraciones parciales)
+                pass
     
     logger.info(f"    -> FKs aplicadas: {success}/{len(fks_list)}")
 
 def process_database_full(db_name, pg_engine):
-    """Procesa una base de datos completa con conexión fresca."""
     PENDING_FKS[db_name] = []
     
-    # 1. Crear Esquema
     with pg_engine.connect() as conn:
         conn.execute(text(f"CREATE SCHEMA IF NOT EXISTS \"{db_name}\""))
         conn.commit()
 
-    # 2. Conectar a MSSQL
     mssql_engine = get_mssql_engine(db_name)
     
-    # Test de conexión
+    # Test conexión
     with mssql_engine.connect() as test_conn:
         pass
     
-    # 3. Listar tablas
     inspector = inspect(mssql_engine)
     tables = inspector.get_table_names()
 
-    # 4. Migrar tablas
     for table in tables:
         migrate_table_with_retry(mssql_engine, pg_engine, db_name, table)
     
-    # 5. Aplicar FKs
     apply_pending_foreign_keys(pg_engine, db_name)
 
 def migrate():
-    logger.info(f"Iniciando migración MODO TANQUE (Retries={MAX_RETRIES}, NullPool)...")
+    logger.info(f"Iniciando migración MODO TANQUE (Retries={MAX_RETRIES}, NullPool + CASCADE)...")
     pg_engine = get_pg_engine()
 
     for db_name in SOURCE_DBS:
@@ -305,7 +304,6 @@ def migrate():
         
         db_success = False
         
-        # Reintento a nivel de base de datos completa (por si falla el login inicial)
         for db_attempt in range(1, DB_MAX_RETRIES + 1):
             try:
                 if db_attempt > 1:
@@ -320,7 +318,7 @@ def migrate():
                 time.sleep(10 * db_attempt)
         
         if not db_success:
-            logger.critical(f"!!! ABANDONANDO DB {db_name} tras fallos de conexión.")
+            logger.critical(f"!!! ABANDONANDO DB {db_name}.")
 
     logger.info("Migración Finalizada.")
 
