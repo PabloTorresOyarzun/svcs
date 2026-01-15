@@ -13,7 +13,7 @@ services:
     extra_hosts:
       - "homero.ajleon.cl:201.236.154.122"
     environment:
-      - TDS_MAX_CONN=1024
+      - TDS_MAX_CONN=4096
       - ADMIN_TOKEN=${ADMIN_TOKEN}
     # TRUCO: Ejecutamos el script, usamos ';' para que si falla no detenga el contenedor,
     # y luego ejecutamos tail -f para mantenerlo vivo para Ofelia.
