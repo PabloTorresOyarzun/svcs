@@ -1,0 +1,46 @@
+services:
+  job-migration:
+    build: .
+    container_name: job_migration_worker
+    env_file:
+      - .env
+    networks:
+      - backend
+    # Comando dual: Ejecuta migración al inicio y luego duerme
+    command: sh -c "python main.py && tail -f /dev/null"
+    
+    # Logs rotativos para no llenar el disco
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+
+    labels:
+      ofelia.enabled: "true"
+      # Al tener TZ=America/Santiago, esto ahora sí será a las 04:30 AM de Chile
+      ofelia.job-exec.migration-daily.schedule: "0 30 4 * * *"
+      ofelia.job-exec.migration-daily.command: "python main.py"
+    
+    image: job-migration-image
+
+  ofelia:
+    image: mcuadros/ofelia:latest
+    container_name: job_scheduler
+    depends_on:
+      - job-migration
+    env_file:
+      - .env
+    # ----------------------------------------------------
+    command: daemon --docker
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+      # Montar localtime del host es un seguro adicional si la imagen de ofelia es muy antigua
+      # pero con la variable TZ debería bastar.
+    networks:
+      - backend
+
+networks:
+  backend:
+    external: true
+    name: backend
