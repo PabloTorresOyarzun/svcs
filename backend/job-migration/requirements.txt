@@ -1,5 +1,0 @@
-sqlmodel
-sqlalchemy
-pandas
-pyodbc
-psycopg2-binary
