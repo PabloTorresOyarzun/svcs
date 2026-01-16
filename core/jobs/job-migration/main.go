@@ -13,10 +13,10 @@ import (
 	_ "github.com/lib/pq"
 )
 
-// --- CONFIGURACION DE ALTO RENDIMIENTO ---
+// --- CONFIGURACION OPTIMA ---
 const (
-	MaxWorkers = 25
-	BatchSize  = 25000
+	MaxWorkers = 30    // 30 es el punto dulce para tu hardware
+	BatchSize  = 25000 
 	MaxRetries = 10
 )
 
@@ -28,7 +28,7 @@ type ForeignKeySQL struct {
 }
 
 func main() {
-	log.Println("[INFO] Iniciando Migracion MODO ALTA VELOCIDAD (Sync Off + 25 Workers)...")
+	log.Println("[INFO] Iniciando Migracion FINAL (Strict Types + TrimSpaces + High Performance)...")
 
 	required := []string{"PG_HOST", "MSSQL_HOST", "MSSQL_PASS"}
 	for _, v := range required {
@@ -37,7 +37,7 @@ func main() {
 		}
 	}
 
-	// FIX: Quitamos options='...' de aqui porque lib/pq a veces falla con parametros de inicio complejos
+	// Connection String sin options raros para evitar error de driver
 	pgConnStr := fmt.Sprintf("host=%s port=%s user=%s password=%s dbname=%s sslmode=disable binary_parameters=yes",
 		os.Getenv("PG_HOST"), os.Getenv("PG_PORT"), os.Getenv("PG_USER"), os.Getenv("PG_PASS"), os.Getenv("PG_DB"))
 
@@ -105,7 +105,7 @@ func processDatabase(dbName, pgConnStr string) {
 	pgDB.SetMaxOpenConns(MaxWorkers + 10)
 	pgDB.SetMaxIdleConns(MaxWorkers + 10)
 	
-	// FIX: Aplicamos la optimizacion aqui, despues de conectar
+	// OPTIMIZACION DE VELOCIDAD
 	if _, err := pgDB.Exec("SET synchronous_commit TO OFF"); err != nil {
 		log.Printf("[WARN] No se pudo desactivar synchronous_commit: %v", err)
 	}
@@ -139,6 +139,11 @@ func processDatabase(dbName, pgConnStr string) {
 	for rows.Next() {
 		var t string
 		rows.Scan(&t)
+		
+		// --- FIX IMPORTANTE: ELIMINAR ESPACIOS ---
+		t = strings.TrimSpace(t) 
+		// -----------------------------------------
+
 		if !isIgnoredTable(t) {
 			tables = append(tables, t)
 		}
@@ -205,7 +210,8 @@ func migrateTable(schema, table string, ms *sql.DB, pg *sql.DB) []ForeignKeySQL 
 			precision, scale, _ := colTypes[i].DecimalSize()
 			pgType = getPostgresType(colTypes[i].DatabaseTypeName(), precision, scale)
 		}
-		safeCol := strings.ReplaceAll(c, "\"", "")
+		// Limpiamos tambien los nombres de columnas por si acaso
+		safeCol := strings.TrimSpace(strings.ReplaceAll(c, "\"", ""))
 		createSQL += fmt.Sprintf(`"%s" %s`, safeCol, pgType)
 		if i < len(cols)-1 {
 			createSQL += ", "
@@ -225,8 +231,7 @@ func migrateTable(schema, table string, ms *sql.DB, pg *sql.DB) []ForeignKeySQL 
 	}
 
 	tx, _ := pg.Begin()
-	// Re-aplicamos optimizacion para la transaccion del worker por si acaso
-	tx.Exec("SET synchronous_commit TO OFF")
+	tx.Exec("SET synchronous_commit TO OFF") // Optimizacion por transaccion
 
 	var count int64 = 0
 	placeholders := make([]string, len(cols))
