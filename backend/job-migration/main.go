@@ -15,8 +15,8 @@ import (
 
 // --- CONFIGURACION DE ALTO RENDIMIENTO ---
 const (
-	MaxWorkers = 50    
-	BatchSize  = 25000 
+	MaxWorkers = 25
+	BatchSize  = 25000
 	MaxRetries = 10
 )
 
@@ -28,7 +28,7 @@ type ForeignKeySQL struct {
 }
 
 func main() {
-	log.Println("[INFO] Iniciando Migracion MODO ALTA VELOCIDAD (Sync Off + 50 Workers)...")
+	log.Println("[INFO] Iniciando Migracion MODO ALTA VELOCIDAD (Sync Off + 25 Workers)...")
 
 	required := []string{"PG_HOST", "MSSQL_HOST", "MSSQL_PASS"}
 	for _, v := range required {
