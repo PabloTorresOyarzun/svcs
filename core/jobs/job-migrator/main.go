@@ -278,7 +278,7 @@ func migrateTable(schema, table string, ms *sql.DB, pg *sql.DB) []ForeignKeySQL 
 		}
 
 		if _, err := stmt.Exec(finalVals...); err != nil {
-			// Silencioso
+			log.Printf("[ERROR] Fallo inserción en tabla %s. Error: %v. ID (si aplica): %v", table, err, finalVals[0])
 		}
 
 		count++

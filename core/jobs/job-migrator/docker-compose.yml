@@ -1,7 +1,7 @@
 services:
-  job-migration:
+  job-migrator:
     build: .
-    container_name: job_migration_worker
+    container_name: job_migrator_worker
     env_file:
       - .env
     networks:
@@ -17,17 +17,17 @@ services:
 
     labels:
       ofelia.enabled: "true"
-      ofelia.job-exec.migration-daily.schedule: "0 30 4 * * *"
-      ofelia.job-exec.migration-daily.command: "./migrator"
-      ofelia.job-exec.migration-daily.no-overlap: "true"
-    
-    image: job-migration-image
+      ofelia.job-exec.migrator-daily.schedule: "0 30 4 * * *"
+      ofelia.job-exec.migrator-daily.command: "./migrator"
+      ofelia.job-exec.migrator-daily.no-overlap: "true"
+
+    image: job-migrator-image
 
   ofelia:
     image: mcuadros/ofelia:latest
     container_name: job_scheduler
     depends_on:
-      - job-migration
+      - job-migrator
     env_file:
       - .env
     command: daemon --docker
