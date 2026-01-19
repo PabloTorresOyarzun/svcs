@@ -1,0 +1,15 @@
+__pycache__
+*.pyc
+*.pyo
+*.pyd
+.Python
+env
+venv
+ENV
+.env.local
+.env.*.local
+.git
+.gitignore
+.dockerignore
+logs
+tmp

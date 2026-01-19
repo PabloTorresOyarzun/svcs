@@ -5,7 +5,10 @@ WORKDIR /app
 # Dependencias del sistema
 RUN apt-get update && apt-get install -y --no-install-recommends \
     curl \
+    tzdata \
     && rm -rf /var/lib/apt/lists/*
+
+ENV TZ=America/Santiago
 
 # Usuario no-root (OWASP)
 RUN useradd --create-home --shell /bin/bash appuser

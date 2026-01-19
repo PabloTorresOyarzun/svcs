@@ -1,7 +1,7 @@
 services:
-  sgd-api:
+  api-parser:
     build: .
-    container_name: sgd-api
+    container_name: api-parser
     restart: unless-stopped
     environment:
       # Base de datos (apunta a pgbouncer de la red backend)

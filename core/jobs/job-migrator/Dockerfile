@@ -20,7 +20,8 @@ FROM alpine:latest
 WORKDIR /root/
 
 # Instalar certificados CA para que SSL funcione si es necesario
-RUN apk --no-cache add ca-certificates
+RUN apk --no-cache add ca-certificates tzdata
+ENV TZ=America/Santiago
 
 # Copiar el binario desde la etapa de construcción
 COPY --from=builder /app/migrator .

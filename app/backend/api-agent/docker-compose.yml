@@ -1,0 +1,18 @@
+services:
+  api-agent:
+    build: .
+    container_name: api-agent
+    restart: unless-stopped
+    ports:
+      - "8002:8000"
+    env_file:
+      - .env
+    volumes:
+      - ./src:/app/src
+      - ./.env:/app/.env
+    networks:
+      - backend
+
+networks:
+  backend:
+    external: true

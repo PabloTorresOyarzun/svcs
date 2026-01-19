@@ -9,17 +9,15 @@ RUN apt-get update && apt-get install -y \
     libxext6 \
     libxrender1 \
     libgomp1 \
+    tzdata \
     && rm -rf /var/lib/apt/lists/*
+
+ENV TZ=America/Santiago
 
 COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
-COPY config.py .
-COPY main.py .
-COPY quality.py .
-COPY patrones.py .
-COPY clasificacion.py .
-COPY token_manager.py .
-COPY database.py .
+COPY . .
+ENV PYTHONPATH=/app/src
 
-CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8001"]
+CMD ["uvicorn", "src.main:app", "--host", "0.0.0.0", "--port", "8001"]

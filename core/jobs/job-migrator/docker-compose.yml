@@ -1,14 +1,21 @@
 services:
   job-migrator:
     build: .
-    container_name: job_migrator_worker
+    container_name: job-migrator
     env_file:
       - .env
+    environment:
+      TZ: America/Santiago
     networks:
       - backend
-    # El CMD ya está en el Dockerfile, pero aquí lo sobreescribimos para compatibilidad
-    command: ./migrator
-    
+
+    # --- CAMBIO PRINCIPAL ---
+    # Usamos entrypoint y command para mantener el contenedor vivo eternamente
+    # sin ejecutar la migración al inicio.
+    entrypoint: /bin/sh
+    command: -c "tail -f /dev/null"
+    # ------------------------
+
     logging:
       driver: "json-file"
       options:
@@ -17,7 +24,9 @@ services:
 
     labels:
       ofelia.enabled: "true"
-      ofelia.job-exec.migrator-daily.schedule: "0 30 4 * * *"
+      # Horario: 04:30 AM todos los días
+      ofelia.job-exec.migrator-daily.schedule: "@every 1h"
+      # Comando que Ofelia inyectará dentro del contenedor vivo
       ofelia.job-exec.migrator-daily.command: "./migrator"
       ofelia.job-exec.migrator-daily.no-overlap: "true"
 

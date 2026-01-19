@@ -2,8 +2,8 @@ import fitz
 import httpx
 import asyncio
 from typing import List, Dict, Tuple
-from patrones import PATRONES_INICIO, PATRON_DEFAULT
-from config import get_settings, calcular_timeout_azure
+from utils.patterns import PATRONES_INICIO, PATRON_DEFAULT
+from config.settings import get_settings, calcular_timeout_azure
 import re
 
 
